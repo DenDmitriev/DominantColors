@@ -25,8 +25,8 @@ class ComparisonTests: XCTestCase {
     }
     
     func testPurplePurpleEuclidean() {
-        let color1 = CGColor(red: 128, green: .zero, blue: 128, alpha: 1.0)
-        let color2 = CGColor(red: 128, green: .zero, blue: 128, alpha: 1.0)
+        let color1 = CGColor(red: 128 / 255, green: .zero, blue: 128 / 255, alpha: 1.0)
+        let color2 = CGColor(red: 128 / 255, green: .zero, blue: 128 / 255, alpha: 1.0)
         
         let difference = color1.difference(from: color2, using: .euclidean).associatedValue
         XCTAssertEqual(difference, 0)
@@ -82,8 +82,8 @@ class ComparisonTests: XCTestCase {
     }
     
     func testPurplePurpleCIE76() {
-        let color1 = CGColor(red: 128, green: .zero, blue: 128, alpha: 1.0)
-        let color2 = CGColor(red: 128, green: .zero, blue: 128, alpha: 1.0)
+        let color1 = CGColor(red: 128 / 255, green: .zero, blue: 128 / 255, alpha: 1.0)
+        let color2 = CGColor(red: 128 / 255, green: .zero, blue: 128 / 255, alpha: 1.0)
         
         let difference = color1.difference(from: color2, using: .CIE76).associatedValue
         XCTAssertEqual(difference, 0)
@@ -139,8 +139,8 @@ class ComparisonTests: XCTestCase {
     }
     
     func testPurplePurpleCIE94() {
-        let color1 = CGColor(red: 128, green: .zero, blue: 128, alpha: 1.0)
-        let color2 = CGColor(red: 128, green: .zero, blue: 128, alpha: 1.0)
+        let color1 = CGColor(red: 128 / 255, green: .zero, blue: 128 / 255, alpha: 1.0)
+        let color2 = CGColor(red: 128 / 255, green: .zero, blue: 128 / 255, alpha: 1.0)
         
         let difference = color1.difference(from: color2, using: .CIE94).associatedValue
         XCTAssertEqual(difference, 0)

@@ -74,7 +74,7 @@ class HexTests: XCTestCase {
     }
     
     func testHexRed() {
-        let color = CGColor(red: 255, green: .zero, blue: .zero, alpha: 1)
+        let color = CGColor(red: 1, green: .zero, blue: .zero, alpha: 1)
         let hex = Hex(cgColor: color)
         XCTAssertEqual(hex.hex, redHex)
     }

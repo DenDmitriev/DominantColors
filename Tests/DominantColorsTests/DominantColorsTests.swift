@@ -50,7 +50,6 @@ class DominantColorsTests: XCTestCase {
         let cgImage = nsImage!.cgImage(forProposedRect: nil, context: nil, hints: nil)!
         var colorFrequencies = try DominantColors.dominantColorFrequencies(image: cgImage, with: .best)
         
-        let totalColorsOnImage = 9
         let extractColorAfterBlackWhiteFilter = 5
         
         let black = CGColor(red: 0, green: 0, blue: 0, alpha: 1)

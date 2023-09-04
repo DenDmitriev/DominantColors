@@ -137,7 +137,7 @@ public class DominantColors {
         // Step 5: Only keep the most frequent colors.
         // ------
         
-        let maxNumberOfColors = 500
+        let maxNumberOfColors = 1000
         let colorFrequencies = sortedColorsFrequencies.prefix(maxNumberOfColors)
         
         // ------
@@ -206,7 +206,6 @@ public class DominantColors {
                 }
             }
         }
-        
         
         // ------
         // Step 7: Again, limit the number of colors we keep, this time drastically.

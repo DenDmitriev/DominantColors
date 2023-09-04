@@ -21,7 +21,7 @@ class AverageColorTests: XCTestCase {
 
         let averageColor = try AverageColor.averageColor(image: cgImage)
 
-        let distance = averageColor.difference(from: CGColor(red: .zero, green: 255, blue: .zero, alpha: 1.0))
+        let distance = averageColor.difference(from: CGColor(red: .zero, green: 1, blue: .zero, alpha: 1.0))
         XCTAssertLessThan(distance.associatedValue, AverageColorTests.tolerance)
     }
     

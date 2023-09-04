@@ -24,7 +24,7 @@ class ComplementaryColorTests: XCTestCase {
     }
     
     func testBlue() {
-        let blue = CGColor(red: .zero, green: .zero, blue: 255, alpha: 1.0)
+        let blue = CGColor(red: .zero, green: .zero, blue: 1, alpha: 1.0)
         let complementaryColor = blue.complementaryColor
         XCTAssertEqual(complementaryColor, CGColor(red: 255.0 / 255.0, green: 255.0 / 255.0, blue: 0, alpha: 1.0))
     }
@@ -36,7 +36,7 @@ class ComplementaryColorTests: XCTestCase {
     }
     
     func testRed() {
-        let red = CGColor(red: 255, green: .zero, blue: .zero, alpha: 1.0)
+        let red = CGColor(red: 1, green: .zero, blue: .zero, alpha: 1.0)
         let complementaryColor = red.complementaryColor
         XCTAssertEqual(complementaryColor, CGColor(red: 0.0 / 255.0, green: 255.0 / 255.0, blue: 255.0 / 255.0, alpha: 1.0))
     }

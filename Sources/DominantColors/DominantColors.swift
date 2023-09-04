@@ -150,7 +150,7 @@ public class DominantColors {
             var bestMatchScore: CGFloat?
             var bestMatchColorFrequency: ColorFrequency?
             for dominantColor in dominantColors {
-                let differenceScore = colorFrequency.color.difference(from: dominantColor.color, using: .CIE76).associatedValue
+                let differenceScore = colorFrequency.color.difference(from: dominantColor.color, using: .CIEDE2000).associatedValue
                 if differenceScore < bestMatchScore ?? CGFloat(Int.max) {
                     bestMatchScore = differenceScore
                     bestMatchColorFrequency = dominantColor

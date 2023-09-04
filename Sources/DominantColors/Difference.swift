@@ -102,9 +102,7 @@ extension CGColor {
             let roundedDifferenceValue = differenceValue.rounded(.toNearestOrEven, precision: 100)
             return ColorDifferenceResult(value: roundedDifferenceValue)
         case .CIEDE2000:
-            let differenceValue = CGColor.deltaECIE94(lhs: self, rhs: color)
-        default:
-            return ColorDifferenceResult(value: -1)
+            let differenceValue = CGColor.deltaCIEDE2000(lhs: self, rhs: color)
         }
     }
     

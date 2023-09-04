@@ -105,7 +105,7 @@ public class DominantColors {
         // Step 3: Remove colors that are barely present on the image.
         // ------
         
-        let areaPart = 0.005 / 100.0 // 0.01 / 100.0
+        let areaPart = 0.01 / 100.0
         let minCountThreshold = Int(targetSize.area * areaPart)
         
         let filteredColorsCountMap = colorsCountedSet.compactMap { (rgb) -> ColorFrequency? in

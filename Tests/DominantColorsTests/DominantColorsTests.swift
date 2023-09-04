@@ -43,6 +43,41 @@ class DominantColorsTests: XCTestCase {
         XCTAssertEqual(colorFrequencies.first?.frequency, 0.5)
         XCTAssertEqual(colorFrequencies[1].frequency, 0.5)
     }
+    
+    func testRemoveBlackWhite() throws {
+        let name = NSImage.Name("Black_White_Red_Green_Blue_Grey")
+        let nsImage = Bundle.module.image(forResource: name)
+        let cgImage = nsImage!.cgImage(forProposedRect: nil, context: nil, hints: nil)!
+        var colorFrequencies = try DominantColors.dominantColorFrequencies(image: cgImage, with: .best)
+        
+        let totalColorsOnImage = 9
+        let extractColorAfterBlackWhiteFilter = 5
+        
+        let black = CGColor(red: 0, green: 0, blue: 0, alpha: 1)
+        let white = CGColor(red: 1, green: 1, blue: 1, alpha: 1)
+        
+        colorFrequencies.removeAll { colorFrequency in
+            let difference = black.difference(from: colorFrequency.color)
+            if difference < .near(10) || difference < .indentical(.zero) {
+                return true
+            } else {
+                return false
+            }
+        }
+        
+        colorFrequencies.removeAll { colorFrequency in
+            let difference = white.difference(from: colorFrequency.color)
+            if difference < .near(10) || difference < .indentical(.zero)  {
+                return true
+            } else {
+                return false
+            }
+        }
+        
+        let dominantColors = colorFrequencies.map({ $0.color })
+        
+        XCTAssertEqual(dominantColors.count, extractColorAfterBlackWhiteFilter)
+    }
 
     func testRedBlueGreenImage() throws {
         let name = NSImage.Name("Red_Green_Blue")

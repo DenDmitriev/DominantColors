@@ -36,10 +36,10 @@ public class DominantColors {
     ///   - quality: The quality used to determine the dominant colors. A higher quality will yield more accurate results, but will be slower.
     ///   - algorithm: The algorithm used to determine the dominant colors. When using a k-means algorithm (`kMeansClustering`), a `CIKMeans` CIFilter isused. Unfortunately this filter doesn't work on the simulator.
     /// - Returns: The dominant colors as array of `CGColor` instances. When using the `.iterative` algorithm, this array is ordered where the first color is the most dominant one.
-    public static func dominantColors(image: CGImage, with quality: DominantColorQuality = .fair, algorithm: DominantColorAlgorithm = .iterative(formula: .CIE76), dominationColors maxCount: Int = 8) throws -> [CGColor] {
+    public static func dominantColors(image: CGImage, with quality: DominantColorQuality = .fair, algorithm: DominantColorAlgorithm = .iterative(formula: .CIE76), dominationColors maxCount: Int = 8, flags: [Flag] = []) throws -> [CGColor] {
         switch algorithm {
         case .iterative(let formula):
-            let dominantColorFrequencies = try dominantColorFrequencies(image: image, with: quality, using: formula, dominationColors: maxCount)
+            let dominantColorFrequencies = try dominantColorFrequencies(image: image, with: quality, using: formula, dominationColors: maxCount, flags: flags)
             let dominantColors = dominantColorFrequencies.map { (colorFrequency) -> CGColor in
                 return colorFrequency.color
             }
@@ -55,13 +55,18 @@ public class DominantColors {
         }
     }
     
+    public enum Flag {
+        case excludeBlack
+        case excludeWhite
+    }
+    
     /// Attempts to computes the dominant colors of the image.
     /// This is not the absolute dominent colors, but instead colors that are similar are groupped together.
     /// This avoid having to deal with many shades of the same colors, which are frequent when dealing with compression artifacts (jpeg etc.).
     /// - Parameters:
     ///   - quality: The quality used to determine the dominant colors. A higher quality will yield more accurate results, but will be slower.
     /// - Returns: The dominant colors as an ordered array of `ColorFrequency` instances, where the first element is the most common one. The frequency is represented as a percentage ranging from 0 to 1.
-    public static func dominantColorFrequencies(image: CGImage, with quality: DominantColorQuality = .fair, using formula: DeltaEFormula = .CIE76, dominationColors maxCount: Int) throws -> [ColorFrequency] {
+    public static func dominantColorFrequencies(image: CGImage, with quality: DominantColorQuality = .fair, using formula: DeltaEFormula = .CIE76, dominationColors maxCount: Int = 8, flags: [Flag] = []) throws -> [ColorFrequency] {
         
         // ------
         // Step 1: Resize the image based on the requested quality
@@ -163,6 +168,45 @@ public class DominantColors {
                 dominantColors.append(colorFrequency)
             }
         }
+        
+        // ------
+        // Step 6.1: Remove pure black colors
+        // ------
+        
+        if flags.contains(.excludeBlack) {
+            let black = CGColor(red: 0, green: 0, blue: 0, alpha: 1)
+            dominantColors.removeAll { dominantColor in
+                let difference = black.difference(from: dominantColor.color)
+                if difference <= .near(10)
+                || difference <= .close(2)
+                || difference <= .similar(1)
+                || difference < .indentical(.zero) {
+                    return true
+                } else {
+                    return false
+                }
+            }
+        }
+        
+        // ------
+        // Step 6.2: Remove pure white colors
+        // ------
+        
+        if flags.contains(.excludeWhite) {
+            let white = CGColor(red: 1, green: 1, blue: 1, alpha: 1)
+            dominantColors.removeAll { dominantColor in
+                let difference = white.difference(from: dominantColor.color)
+                if difference <= .near(10)
+                || difference <= .close(2)
+                || difference <= .similar(1)
+                || difference < .indentical(.zero) {
+                    return true
+                } else {
+                    return false
+                }
+            }
+        }
+        
         
         // ------
         // Step 7: Again, limit the number of colors we keep, this time drastically.

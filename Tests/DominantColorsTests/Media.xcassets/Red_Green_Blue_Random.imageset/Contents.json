@@ -1,0 +1,12 @@
+{
+  "images" : [
+    {
+      "filename" : "Red_Green_Blue_Random.png",
+      "idiom" : "universal"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}

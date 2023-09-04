@@ -1,0 +1,12 @@
+{
+  "images" : [
+    {
+      "filename" : "Purple_Square.jpg",
+      "idiom" : "universal"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}

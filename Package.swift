@@ -23,6 +23,7 @@ let package = Package(
             dependencies: []),
         .testTarget(
             name: "DominantColorsTests",
-            dependencies: ["DominantColors"]),
+            dependencies: ["DominantColors"],
+            resources: [.process("Media.xcassets")]),
     ]
 )

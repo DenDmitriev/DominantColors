@@ -101,6 +101,8 @@ extension CGColor {
             let differenceValue = CGColor.deltaECIE94(lhs: self, rhs: color)
             let roundedDifferenceValue = differenceValue.rounded(.toNearestOrEven, precision: 100)
             return ColorDifferenceResult(value: roundedDifferenceValue)
+        case .CIEDE2000:
+            let differenceValue = CGColor.deltaECIE94(lhs: self, rhs: color)
         default:
             return ColorDifferenceResult(value: -1)
         }
@@ -133,6 +135,60 @@ extension CGColor {
         
         let deltaE = sqrt(p1 + p2 + p3)
         
-        return deltaE;
+        return deltaE
+    }
+    
+    private static func deltaCIEDE2000(lhs: CGColor, rhs: CGColor) -> CGFloat {
+        let kL: CGFloat = 1.0
+        let kC: CGFloat = 1.0
+        let kH: CGFloat = 1.0
+        let k1: CGFloat = 0.045
+        let k2: CGFloat = 0.015
+        let sL: CGFloat = 1.0
+        
+        let c1 = sqrt(pow(lhs.a, 2) + pow(lhs.b, 2))
+        let sC = 1 + k1 * c1
+        let sH = 1 + k2 * c1
+        
+        let deltaL = lhs.L - rhs.L
+        let deltaA = lhs.a - rhs.a
+        let deltaB = lhs.b - rhs.b
+                
+        let c2 = sqrt(pow(rhs.a, 2) + pow(rhs.b, 2))
+        let deltaCab = c1 - c2
+
+        let deltaHab = sqrt(pow(deltaA, 2) + pow(deltaB, 2) - pow(deltaCab, 2))
+        
+        let pi = CGFloat.pi
+        let cAverage = (c1 + c2) / 2
+        let cHelp = sqrt(pow(cAverage, 7) / (pow(cAverage, 7) + pow(25, 7)))
+        
+        let b1 = lhs.b
+        let a1 = lhs.a
+        let a1Trait = a1 + (a1 / 2) * (1 - (1 / 2) * cHelp)
+        
+        let b2 = rhs.b
+        let a2 = rhs.a
+        let a2Trait = a1 + (a2 / 2) * (1 - (1 / 2) * cHelp)
+        
+        let h1Shift = atan(b1 / a1Trait).truncatingRemainder(dividingBy: 2 * pi)
+        let h2Shift = atan(b2 / a2Trait).truncatingRemainder(dividingBy: 2 * pi)
+        
+        let deltaHAverage = (h1Shift - h2Shift) > pi
+        let extraAngle = deltaHAverage ? 2 * pi : .zero
+        let hAverage = (h1Shift + h2Shift + extraAngle) / 2
+        let valueRtHelp = 5 * pi / 36
+        let expValue = pow((hAverage - 11 * valueRtHelp) / valueRtHelp, 2)
+        
+        let rT = -2 * cHelp * sin((pi / 6) * exp(-expValue))
+        
+        let p1 = pow(deltaL / (kL * sL), 2)
+        let p2 = pow(deltaCab / (kC * sC), 2)
+        let p3 = pow(deltaHab / (kH * sH), 2)
+        let p4 = rT * (deltaCab * deltaHab) / (sC * sH)
+        
+        let deltaE = sqrt(p1 + p2 + p3 + p4)
+        
+        return deltaE
     }
 }

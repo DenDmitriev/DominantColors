@@ -143,7 +143,7 @@ public class DominantColors {
         var dominantColors = [ColorFrequency]()
         
         /// The score that needs to be met to consider two colors similar.
-        let colorDifferenceScoreThreshold: CGFloat = 10.0
+        let colorDifferenceScoreThreshold: CGFloat = 20.0
         
         // Combines colors that are similar.
         for colorFrequency in colorFrequencies {

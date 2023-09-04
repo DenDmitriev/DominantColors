@@ -36,10 +36,10 @@ public class DominantColors {
     ///   - quality: The quality used to determine the dominant colors. A higher quality will yield more accurate results, but will be slower.
     ///   - algorithm: The algorithm used to determine the dominant colors. When using a k-means algorithm (`kMeansClustering`), a `CIKMeans` CIFilter isused. Unfortunately this filter doesn't work on the simulator.
     /// - Returns: The dominant colors as array of `CGColor` instances. When using the `.iterative` algorithm, this array is ordered where the first color is the most dominant one.
-    public static func dominantColors(image: CGImage, with quality: DominantColorQuality = .fair, algorithm: DominantColorAlgorithm = .iterative) throws -> [CGColor] {
+    public static func dominantColors(image: CGImage, with quality: DominantColorQuality = .fair, algorithm: DominantColorAlgorithm = .iterative(formula: .CIE76)) throws -> [CGColor] {
         switch algorithm {
-        case .iterative:
-            let dominantColorFrequencies = try dominantColorFrequencies(image: image, with: quality)
+        case .iterative(let formula):
+            let dominantColorFrequencies = try dominantColorFrequencies(image: image, with: quality, using: formula)
             let dominantColors = dominantColorFrequencies.map { (colorFrequency) -> CGColor in
                 return colorFrequency.color
             }
@@ -61,7 +61,7 @@ public class DominantColors {
     /// - Parameters:
     ///   - quality: The quality used to determine the dominant colors. A higher quality will yield more accurate results, but will be slower.
     /// - Returns: The dominant colors as an ordered array of `ColorFrequency` instances, where the first element is the most common one. The frequency is represented as a percentage ranging from 0 to 1.
-    public static func dominantColorFrequencies(image: CGImage, with quality: DominantColorQuality = .fair) throws -> [ColorFrequency] {
+    public static func dominantColorFrequencies(image: CGImage, with quality: DominantColorQuality = .fair, using formula: DeltaEFormula = .CIE76) throws -> [ColorFrequency] {
         
         // ------
         // Step 1: Resize the image based on the requested quality
@@ -150,7 +150,7 @@ public class DominantColors {
             var bestMatchScore: CGFloat?
             var bestMatchColorFrequency: ColorFrequency?
             for dominantColor in dominantColors {
-                let differenceScore = colorFrequency.color.difference(from: dominantColor.color, using: .CIEDE2000).associatedValue
+                let differenceScore = colorFrequency.color.difference(from: dominantColor.color, using: formula).associatedValue
                 if differenceScore < bestMatchScore ?? CGFloat(Int.max) {
                     bestMatchScore = differenceScore
                     bestMatchColorFrequency = dominantColor

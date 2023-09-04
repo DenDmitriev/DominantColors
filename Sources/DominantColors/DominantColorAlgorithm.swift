@@ -10,7 +10,7 @@ import Foundation
 public enum DominantColorAlgorithm {
     
     /// Finds the dominant colors of an image by iterating, grouping and sorting its pixels.
-    case iterative
+    case iterative(formula: DeltaEFormula)
     
     /// Finds the dominant colors of an image by using using a k-means clustering algorithm.
     case kMeansClustering

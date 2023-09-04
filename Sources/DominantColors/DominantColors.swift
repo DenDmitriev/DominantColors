@@ -237,7 +237,7 @@ public class DominantColors {
     private static func areaAverageColors(image: CGImage, count: UInt8) throws -> [CGColor] {
         let ciImage = CIImage(cgImage: image)
         guard
-            image.width ~= Int(count),
+            1...image.width ~= Int(count),
             count != .zero
         else {
             throw ImageColorError.lowResolutionFailure

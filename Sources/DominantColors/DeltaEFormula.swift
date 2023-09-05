@@ -23,4 +23,8 @@ public enum DeltaEFormula: Int, CaseIterable {
     /// The `CIEDE2000` algorithm is the most precise algorithm to compare colors.
     /// It is considerably slower than its predecessors.
     case CIEDE2000
+    
+    /// The `CMC` algorithm is defined a difference measure, based on the L*C*h color model.
+    /// The quasimetric has two parameters: lightness (l) and chroma (c), allowing the users to weight the difference based on the ratio of l:c that is deemed appropriate for the application.
+    case CMC
 }

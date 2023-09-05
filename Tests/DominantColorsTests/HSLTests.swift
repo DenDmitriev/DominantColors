@@ -9,6 +9,9 @@ import XCTest
 @testable import DominantColors
 
 class HSLTests: XCTestCase {
+    
+    /// https://convertacolor.com for check results
+
     func testRed() {
         let color = CGColor(red: 1, green: .zero, blue: .zero, alpha: 1)
         

@@ -87,6 +87,10 @@ extension CGColor {
             let differenceValue = CGColor.deltaCIEDE2000(lhs: self, rhs: color)
             let roundedDifferenceValue = differenceValue.rounded(.toNearestOrEven, precision: 100)
             return ColorDifferenceResult(value: roundedDifferenceValue)
+        case .CMC:
+            let differenceValue = CGColor.deltaCMC(lhs: self, rhs: color)
+            let roundedDifferenceValue = differenceValue.rounded(.toNearestOrEven, precision: 100)
+            return ColorDifferenceResult(value: roundedDifferenceValue)
         }
     }
     
@@ -170,6 +174,44 @@ extension CGColor {
         let p4 = rT * (deltaCab * deltaHab) / (sC * sH)
         
         let deltaE = sqrt(p1 + p2 + p3 + p4)
+        
+        return deltaE
+    }
+    
+    ///http://www.brucelindbloom.com/index.html?Eqn_DeltaE_CMC.html
+    private static func deltaCMC(lhs: CGColor, rhs: CGColor) -> CGFloat {
+        let lab1 = Lab(L: lhs.L, a: lhs.a, b: lhs.b)
+        let lab2 = Lab(L: rhs.L, a: rhs.a, b: rhs.b)
+
+        let c1 = sqrt(pow(lab1.a, 2) + pow(lab1.b, 2))
+        let c2 = sqrt(pow(lab2.a, 2) + pow(lab2.b, 2))
+        let deltaC = c1 - c2
+
+        let deltaA = lab1.a - lab2.a
+        let deltaB = lab1.b - lab2.b
+
+        let deltaH = sqrt(pow(deltaA, 2) + pow(deltaB, 2) - pow(deltaC, 2))
+
+        let deltaL = lab1.L - lab2.L
+
+        let sL = lab1.L < 16 ? 0.511 : (0.040975 * lab1.L) / (1 + 0.01765 * lab1.L)
+
+        let sC = (0.0638 * c1) / (1 + 0.0131 * c1) + 0.638
+
+        let h = lab1.a == 0 ? 0 : atan(lab1.b / lab1.a)
+        let h1 = h >= 0 ? h : h + 360
+
+        let t = 164...345 ~= h1 ? 0.56 + abs(0.2 * cos(h1 + 168)) : 0.36 + abs(0.4 * cos(h1 + 35))
+
+        let f = sqrt(pow(c1, 4) / (pow(c1, 4) + 1900))
+
+        let sH = sC * (f * t + 1 - f)
+
+        let p1 = pow((deltaL / sL), 2)
+        let p2 = pow((deltaC / sC), 2)
+        let p3 = pow((deltaH / sH), 2)
+
+        let deltaE = sqrt(p1 + p2 + p3) / 2 // because result from 0...200 / 100 = 0...100
         
         return deltaE
     }

@@ -11,7 +11,7 @@ import XCTest
 class LabTests: XCTestCase {
 
     func testGreen() {
-        let color = CGColor(red: .zero, green: 255, blue: .zero, alpha: 1)
+        let color = CGColor(red: .zero, green: 1, blue: .zero, alpha: 1)
         
         XCTAssertEqual(color.L, 87.74)
         XCTAssertEqual(color.a, -86.18)

@@ -177,7 +177,7 @@ public class DominantColors {
             let black = CGColor(red: 0, green: 0, blue: 0, alpha: 1)
             dominantColors.removeAll { dominantColor in
                 let difference = black.difference(from: dominantColor.color)
-                if difference <= .near(10)
+                if difference <= .near(5)
                 || difference <= .close(2)
                 || difference <= .similar(1)
                 || difference < .indentical(.zero) {
@@ -196,7 +196,7 @@ public class DominantColors {
             let white = CGColor(red: 1, green: 1, blue: 1, alpha: 1)
             dominantColors.removeAll { dominantColor in
                 let difference = white.difference(from: dominantColor.color)
-                if difference <= .near(10)
+                if difference <= .near(5)
                 || difference <= .close(2)
                 || difference <= .similar(1)
                 || difference < .indentical(.zero) {

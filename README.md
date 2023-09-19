@@ -4,6 +4,7 @@ A library for extracting color from an image.
 
 - [Features](#features)
 - [Installation](#installation)
+- [Example](#example)
 - [Contributing](#contributing)
 - [License](#license)
 
@@ -37,6 +38,9 @@ let count: UInt8 = 8
 
 let cgColors = try DominantColors.dominantColors(image: cgImage, algorithm: .areaAverage(count: count))
 ```
+
+## Example
+Use the macOS example [ImageColors](https://github.com/DenDmitriev/DominantColors/Example/ImageColors) project included in this repository to find examples of various DominantColors features.
 
 ## Installation
 

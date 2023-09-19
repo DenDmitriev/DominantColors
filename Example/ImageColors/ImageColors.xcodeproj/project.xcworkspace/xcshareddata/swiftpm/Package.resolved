@@ -1,0 +1,14 @@
+{
+  "pins" : [
+    {
+      "identity" : "dominantcolors",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/DenDmitriev/DominantColors.git",
+      "state" : {
+        "revision" : "03d6f294a6161a5ff1b18d88db2a53ab85f21d9a",
+        "version" : "1.0.5"
+      }
+    }
+  ],
+  "version" : 2
+}

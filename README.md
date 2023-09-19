@@ -74,7 +74,7 @@ To contribute to the codebase, just send a [pull request](https://github.com/Den
 
 ## License
 
-See the [license](https://github.com/DenDmitriev/DominantColors/LICENSE).
+See the [license](https://github.com/DenDmitriev/DominantColors/blob/main/LICENSE).
 The library uses the code of the original library [ColorKit](https://github.com/Boris-Em/ColorKit), which is rewritten from Objective-C to Swift and supplemented.
 
 

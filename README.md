@@ -12,10 +12,13 @@ A library for extracting color from an image.
 
 The DominantColors makes it easy to find the dominant colors of the image. It returns a color palette of the most common colors in the image.
 
-<img width="912" alt="Example1" src="https://github.com/DenDmitriev/DominantColors/assets/65191747/3f973ff9-e3af-47af-89e8-5953898b8673">
-<img width="912" alt="Example2" src="https://github.com/DenDmitriev/DominantColors/assets/65191747/1734d1a2-59ee-4bcc-a1cc-3acafa38710c">
-<img width="912" alt="Example3" src="https://github.com/DenDmitriev/DominantColors/assets/65191747/b5becc52-f1e7-4a2c-895a-f7c424c276f0">
-<img width="912" alt="Example4" src="https://github.com/DenDmitriev/DominantColors/assets/65191747/2a09b613-58e2-4e0b-92ff-3932ea8f0bc4">
+<img width="912" alt="Example1" src="https://github.com/DenDmitriev/DominantColors/assets/65191747/8d3cfe77-125a-4e61-be32-17d23fafae57">
+
+<img width="912" alt="Example3" src="https://github.com/DenDmitriev/DominantColors/assets/65191747/75c11db0-1c0a-4c2e-99b0-a9033dd2b3b5">
+
+<img width="912" alt="Example2" src="https://github.com/DenDmitriev/DominantColors/assets/65191747/0d0f7e79-041f-4c99-90d7-7a36bd0a8e7d">
+
+<img width="912" alt="Example4" src="https://github.com/DenDmitriev/DominantColors/assets/65191747/198e2e29-24be-4301-9900-b87d8c8b8042">
 
 
 Get the colors according to the standard settings:

@@ -40,7 +40,7 @@ let cgColors = try DominantColors.dominantColors(image: cgImage, algorithm: .are
 ```
 
 ## Example
-Use the macOS example [ImageColors](https://github.com/DenDmitriev/DominantColors/Example/ImageColors) project included in this repository to find examples of various DominantColors features.
+Use the macOS example [ImageColors](https://github.com/DenDmitriev/DominantColors/tree/main/Example/ImageColors) project included in this repository to find examples of various DominantColors features.
 
 ## Installation
 

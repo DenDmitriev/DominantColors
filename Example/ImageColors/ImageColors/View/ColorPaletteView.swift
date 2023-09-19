@@ -12,8 +12,10 @@ struct ColorPaletteView: View {
     
     @State var colors: [Color]
     @EnvironmentObject var model: ImageColorsModel
+    @State var showHex: Bool
     
     init(
+        showHex: Bool,
         colors: [Color] = [
             .red,
             .orange,
@@ -24,6 +26,7 @@ struct ColorPaletteView: View {
             .purple
         ]
     ) {
+        self.showHex = showHex
         self.colors = colors
     }
     
@@ -33,10 +36,12 @@ struct ColorPaletteView: View {
                 Rectangle()
                     .fill(color)
                     .overlay {
-                        Text(hex(for: color))
-                            .padding(4)
-                            .background(.ultraThinMaterial)
-                            .cornerRadius(4)
+                        if showHex {
+                            Text(hex(for: color))
+                                .padding(4)
+                                .background(.ultraThinMaterial)
+                                .cornerRadius(4)
+                        }
                     }
             }
         }
@@ -55,7 +60,7 @@ struct ColorPaletteView: View {
 
 struct ColorPaletteView_Previews: PreviewProvider {
     static var previews: some View {
-        ColorPaletteView()
+        ColorPaletteView(showHex: true)
             .environmentObject(ImageColorsModel())
             .previewLayout(.fixed(width: 800, height: 50))
     }

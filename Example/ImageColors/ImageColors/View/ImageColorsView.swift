@@ -43,7 +43,7 @@ struct ImageColorsView: View {
                     }
                     .frame(maxHeight: .infinity)
                     
-                    ColorPaletteView()
+                    ColorPaletteView(showHex: false)
                         .frame(minHeight: geometry.size.height / 24, idealHeight: geometry.size.height / 16, maxHeight: geometry.size.height / 8)
                         .environmentObject(model)
                         .overlay {

@@ -32,7 +32,7 @@ class ImageColorsModel: ObservableObject {
             guard let cgImage = nsImage?.cgImage(forProposedRect: nil, context: nil, hints: nil) else { return }
             
             var algorithm = algorithm
-            if let formula = formula {
+            if let formula = formula, algorithm == .iterative(formula: formula) {
                 algorithm = .iterative(formula: formula)
             }
             

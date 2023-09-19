@@ -10,23 +10,20 @@ import DominantColors
 
 class ImageColorsModel: ObservableObject {
     @Published var colors = [Color]()
-    @Published var algorithm: DominantColorAlgorithm
-    @Published var formula: DeltaEFormula
     @Published var error: ImageColorsError?
-    
-    init() {
-        let formula = DeltaEFormula.CIE94
-        self.formula = formula
-        self.algorithm = .iterative(formula: formula)
-    }
+    @Published var isProgress: Bool = false
     
     func fetchColors(
         imageURL: URL?,
-        algorithm: DominantColorAlgorithm? = nil,
+        algorithm: DominantColorAlgorithm,
         formula: DeltaEFormula? = nil,
         flags: [DominantColors.Flag] = []
     ) async {
         guard let imageURL else { return }
+        
+        DispatchQueue.main.async {
+            self.isProgress = true
+        }
         
         do {
             let data = try Data(contentsOf: imageURL)
@@ -34,11 +31,19 @@ class ImageColorsModel: ObservableObject {
             
             guard let cgImage = nsImage?.cgImage(forProposedRect: nil, context: nil, hints: nil) else { return }
             
-            let cgColors = try DominantColors.dominantColors(image: cgImage, algorithm: algorithm ?? self.algorithm, flags: flags)
+            var algorithm = algorithm
+            if let formula = formula {
+                algorithm = .iterative(formula: formula)
+            }
+            
+            print(algorithm, flags)
+            
+            let cgColors = try DominantColors.dominantColors(image: cgImage, algorithm: algorithm, flags: flags)
             let colors = cgColors.map { Color(cgColor: $0) }
             
             DispatchQueue.main.async {
                 self.colors = colors
+                self.isProgress = false
             }
         } catch let error {
             DispatchQueue.main.async {

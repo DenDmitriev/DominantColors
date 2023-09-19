@@ -37,7 +37,6 @@ struct ColorPaletteView: View {
                             .padding(4)
                             .background(.ultraThinMaterial)
                             .cornerRadius(4)
-                            .foregroundColor(.black)
                     }
             }
         }

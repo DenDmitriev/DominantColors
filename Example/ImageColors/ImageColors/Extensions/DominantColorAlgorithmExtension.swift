@@ -8,21 +8,13 @@
 import Foundation
 import DominantColors
 
-extension DominantColorAlgorithm: CaseIterable, Hashable {
+extension DominantColorAlgorithm:  Hashable {
     public func hash(into hasher: inout Hasher) {
         hasher.combine(title)
     }
     
     public static func == (lhs: DominantColorAlgorithm, rhs: DominantColorAlgorithm) -> Bool {
         lhs.title == rhs.title
-    }
-    
-    public static var allCases: [DominantColorAlgorithm] {
-        return [
-            .areaAverage(count: 8),
-            .iterative(formula: DeltaEFormula.CIE94),
-            .kMeansClustering
-        ]
     }
     
     var title: String {

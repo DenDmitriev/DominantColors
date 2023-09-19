@@ -18,6 +18,9 @@ struct ImageColorsView: View {
     @State private var isExcludeBlack = false
     @State private var isExcludeWhite = false
     @State var colorCount: Int = 8
+    @State var algorithm: DominantColorAlgorithm = .kMeansClustering
+    @State var formula: DeltaEFormula = .CIE76
+    @State var isProgress: Bool = false
     
     var body: some View {
         VStack {
@@ -33,13 +36,29 @@ struct ImageColorsView: View {
                             .font(.system(size: 40))
                             .foregroundColor(.gray)
                             .frame(maxWidth: .infinity, maxHeight: .infinity)
-                            .background(Rectangle())
+                            .background(
+                                Rectangle()
+                                    .fill(.quaternary)
+                            )
                     }
                     .frame(maxHeight: .infinity)
                     
                     ColorPaletteView()
                         .frame(minHeight: geometry.size.height / 24, idealHeight: geometry.size.height / 16, maxHeight: geometry.size.height / 8)
                         .environmentObject(model)
+                        .overlay {
+                            if isProgress {
+                                ZStack {
+                                    Rectangle()
+                                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                                        .background(.ultraThinMaterial)
+                                    
+                                    ProgressView()
+                                        .progressViewStyle(.circular)
+                                }
+                                
+                            }
+                        }
                 }
                 .background(.black)
             }
@@ -47,8 +66,8 @@ struct ImageColorsView: View {
             VStack {
                 GroupBox("Algorithm") {
                     HStack(spacing: 16) {
-                        Picker(selection: $model.algorithm) {
-                            ForEach(DominantColorAlgorithm.allCases, id: \.self) { algorithm in
+                        Picker(selection: $algorithm) {
+                            ForEach(algorithms, id: \.self) { algorithm in
                                 Text(algorithm.title)
                             }
                         } label: {
@@ -56,14 +75,14 @@ struct ImageColorsView: View {
                         }
                         .frame(width: 200)
                         
-                        Picker(selection: $model.formula) {
+                        Picker(selection: $formula) {
                             ForEach(DeltaEFormula.allCases, id: \.self) { formula in
                                 Text(formula.title)
                             }
                         } label: {
                             Text("Formula")
                         }
-                        .disabled(model.algorithm != .iterative(formula: model.formula))
+                        .disabled(algorithm != .iterative(formula: formula))
                         .frame(width: 200)
 
                     }
@@ -79,14 +98,15 @@ struct ImageColorsView: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(8)
                 }
-                .disabled(model.algorithm != .iterative(formula: model.formula))
+                .disabled(algorithm != .iterative(formula: formula))
                 
-                HStack {
+                Group {
                     Button("Import image") {
                         showFileImporter.toggle()
                     }
                 }
                 .frame(maxWidth: .infinity, alignment: .trailing)
+                .padding(.top)
             }
             .padding()
         }
@@ -100,25 +120,28 @@ struct ImageColorsView: View {
             .cornerRadius(8)
             .padding()
         }
-        .onReceive(model.$algorithm, perform: { algorithm in
+        .onChange(of: algorithm, perform: { algorithm in
             Task {
-                await model.fetchColors(imageURL: imageURL, algorithm: algorithm, flags: createFlags())
+                await model.fetchColors(imageURL: imageURL, algorithm: algorithm, formula: formula, flags: createFlags())
             }
         })
-        .onReceive(model.$formula, perform: { formula in
+        .onChange(of: formula, perform: { formula in
             Task {
                 await model.fetchColors(imageURL: imageURL, algorithm: .iterative(formula: formula), flags: createFlags())
             }
         })
         .onChange(of: isExcludeBlack, perform: { isExcludeBlack in
             Task {
-                await model.fetchColors(imageURL: imageURL, flags: createFlags(isExcludeBlack: isExcludeBlack))
+                await model.fetchColors(imageURL: imageURL, algorithm: algorithm, formula: formula, flags: createFlags(isExcludeBlack: isExcludeBlack))
             }
         })
         .onChange(of: isExcludeWhite, perform: { isExcludeWhite in
             Task {
-                await model.fetchColors(imageURL: imageURL, flags: createFlags(isExcludeWhite: isExcludeWhite))
+                await model.fetchColors(imageURL: imageURL, algorithm: algorithm, formula: formula, flags: createFlags(isExcludeWhite: isExcludeWhite))
             }
+        })
+        .onReceive(model.$isProgress, perform: { isProgress in
+            self.isProgress = isProgress
         })
         .fileImporter(
             isPresented: $showFileImporter,
@@ -130,7 +153,7 @@ struct ImageColorsView: View {
                     self.imageURL = url
                 }
                 Task {
-                    await model.fetchColors(imageURL: imageURL, flags: createFlags())
+                    await model.fetchColors(imageURL: imageURL, algorithm: algorithm, flags: createFlags())
                 }
             case .failure(let failure):
                 print(failure)
@@ -154,6 +177,14 @@ struct ImageColorsView: View {
         }
         
         return flags
+    }
+    
+    private var algorithms: [DominantColorAlgorithm] {
+        [
+            .areaAverage(count: UInt8(colorCount)),
+            .iterative(formula: formula),
+            .kMeansClustering
+        ]
     }
 }
 

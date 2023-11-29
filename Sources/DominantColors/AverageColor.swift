@@ -28,8 +28,18 @@ public class AverageColor {
         var bitmap = [UInt8](repeating: 0, count: 4)
         
         context.render(outputImage, toBitmap: &bitmap, rowBytes: 4, bounds: CGRect(x: 0, y: 0, width: 1, height: 1), format: CIFormat.RGBA8, colorSpace: CGColorSpaceCreateDeviceRGB())
-
-        let averageColor = CGColor(red: CGFloat(bitmap[0]) / 255.0, green: CGFloat(bitmap[1]) / 255.0, blue: CGFloat(bitmap[2]) / 255.0, alpha: CGFloat(bitmap[3]) / 255.0)
+        
+        let red: CGFloat = CGFloat(bitmap[0]) / 255.0
+        let green: CGFloat = CGFloat(bitmap[1]) / 255.0
+        let blue: CGFloat = CGFloat(bitmap[2]) / 255.0
+        let alpha: CGFloat = CGFloat(bitmap[3]) / 255.0
+        
+        let components: [CGFloat] = [red, green, blue, alpha]
+        
+        guard
+            let colorSpace = image.colorSpace ?? CGColorSpace(name: CGColorSpace.sRGB),
+            let averageColor = CGColor(colorSpace: colorSpace, components: components)
+        else { throw ImageColorError.cgColorFailure }
         
         return averageColor
     }

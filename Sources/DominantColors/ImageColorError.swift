@@ -28,6 +28,9 @@ enum ImageColorError: Error {
     
     /// The resolution of the image is less than the requested number of colors
     case lowResolutionFailure
+    
+    /// The `CGColor` instance could not be created.
+    case cgColorFailure
 }
 
 extension ImageColorError: LocalizedError {
@@ -47,6 +50,8 @@ extension ImageColorError: LocalizedError {
             return "The singleton CFNull (special memory address) object is nil."
         case .lowResolutionFailure:
             return "The resolution of the image is less than the requested number of colors"
+        case .cgColorFailure:
+            return "Failed create cg color or color space for color."
         }
     }
 }

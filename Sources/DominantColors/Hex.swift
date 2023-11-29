@@ -37,7 +37,16 @@ public struct Hex {
         default:
             (a, r, g, b) = (255, 0, 0, 0)
         }
-        self.cgColor = .init(red: CGFloat(r) / 255, green: CGFloat(g) / 255, blue: CGFloat(b) / 255, alpha: CGFloat(a) / 255)
+        
+        let red = CGFloat(r) / 255
+        let green = CGFloat(g) / 255
+        let blue = CGFloat(b) / 255
+        let alpha = CGFloat(a) / 255
+        
+        let components: [CGFloat] = [red, green, blue, alpha]
+        let colorSpace = CGColorSpace(name: CGColorSpace.sRGB)
+        
+        self.cgColor = CGColor(colorSpace: colorSpace!, components: components)!
     }
     
     /// The hexadecimal value of the color.

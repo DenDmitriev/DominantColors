@@ -1,5 +1,5 @@
 //
-//  File.swift
+//  DominantColors.swift
 //
 //
 //  Created by Denis Dmitriev on 03.09.2023.
@@ -116,13 +116,24 @@ public class DominantColors {
         let filteredColorsCountMap = colorsCountedSet.compactMap { (rgb) -> ColorFrequency? in
             let count = colorsCountedSet.count(for: rgb)
             
-            guard count > minCountThreshold else {
-                return nil
-            }
+            guard 
+                count > minCountThreshold,
+                let rgb = rgb as? RGB
+            else { return nil }
             
-            let rgb = rgb as! RGB
-
-            return ColorFrequency(color: CGColor(red: CGFloat(rgb.R) / 255.0, green: CGFloat(rgb.G) / 255.0, blue: CGFloat(rgb.B) / 255.0, alpha: 1.0), count: CGFloat(count))
+            let red = CGFloat(rgb.R) / 255.0
+            let green = CGFloat(rgb.G) / 255.0
+            let blue = CGFloat(rgb.B) / 255.0
+            let alpha = 1.0
+            
+            let components: [CGFloat] = [red, green, blue, alpha]
+            
+            guard
+                let colorSpace = image.colorSpace ?? CGColorSpace(name: CGColorSpace.sRGB),
+                let cgColor = CGColor(colorSpace: colorSpace, components: components)
+            else { return nil }
+            
+            return ColorFrequency(color: cgColor, count: CGFloat(count))
         }
         
         // ------
@@ -174,7 +185,7 @@ public class DominantColors {
         // ------
         
         if flags.contains(.excludeBlack) {
-            let black = CGColor(red: 0, green: 0, blue: 0, alpha: 1)
+            let black = CGColor(colorSpace: CGColorSpace(name: CGColorSpace.sRGB)!, components: [0, 0, 0, 1])!
             dominantColors.removeAll { dominantColor in
                 let difference = black.difference(from: dominantColor.color)
                 if difference <= .near(5)
@@ -193,7 +204,7 @@ public class DominantColors {
         // ------
         
         if flags.contains(.excludeWhite) {
-            let white = CGColor(red: 1, green: 1, blue: 1, alpha: 1)
+            let white = CGColor(colorSpace: CGColorSpace(name: CGColorSpace.sRGB)!, components: [1, 1, 1, 1])!
             dominantColors.removeAll { dominantColor in
                 let difference = white.difference(from: dominantColor.color)
                 if difference <= .near(5)
@@ -270,7 +281,18 @@ public class DominantColors {
         var dominantColors = [CGColor]()
 
         for i in 0..<clusterCount {
-            let color = CGColor(red: CGFloat(bitmap[i * 4 + 0]) / 255.0, green: CGFloat(bitmap[i * 4 + 1]) / 255.0, blue: CGFloat(bitmap[i * 4 + 2]) / 255.0, alpha: CGFloat(bitmap[i * 4 + 3]) / 255.0)
+            let red: CGFloat = CGFloat(bitmap[i * 4 + 0]) / 255.0
+            let green: CGFloat = CGFloat(bitmap[i * 4 + 1]) / 255.0
+            let blue: CGFloat = CGFloat(bitmap[i * 4 + 2]) / 255.0
+            let alpha: CGFloat = CGFloat(bitmap[i * 4 + 3]) / 255.0
+            
+            let components: [CGFloat] = [red, green, blue, alpha]
+            
+            guard
+                let colorSpace = image.colorSpace ?? CGColorSpace(name: CGColorSpace.sRGB),
+                let color = CGColor(colorSpace: colorSpace, components: components)
+            else { throw ImageColorError.cgColorFailure }
+            
             dominantColors.append(color)
         }
         
@@ -319,16 +341,22 @@ public class DominantColors {
             bitmaps.append(bitmap)
         }
         
-        let averageColors = bitmaps.map { bitmap in
+        let averageColors = bitmaps.compactMap { bitmap -> CGColor? in
             let red = CGFloat(bitmap[0]) / 255.0
             let green = CGFloat(bitmap[1]) / 255.0
             let blue = CGFloat(bitmap[2]) / 255.0
             let alpha = CGFloat(bitmap[3]) / 255.0
-            return CGColor(red: red, green: green, blue: blue, alpha: alpha)
+            
+            let components: [CGFloat] = [red, green, blue, alpha]
+            guard
+                let colorSpace = image.colorSpace ?? CGColorSpace(name: CGColorSpace.sRGB),
+                let cgColor = CGColor(colorSpace: colorSpace, components: components)
+            else { return nil }
+            
+            return cgColor
         }
         
         return averageColors
     }
-    
 }
 

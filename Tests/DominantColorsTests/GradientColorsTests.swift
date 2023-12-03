@@ -98,5 +98,32 @@ final class GradientColorsTests: XCTestCase {
             })
         }
     }
+    
+    func testMultiColors() {
+        let colors: [CGColor] = [
+            .init(red: 1, green: 0, blue: 0, alpha: 1),
+            .init(red: 0, green: 1, blue: 0, alpha: 1),
+            .init(red: 0, green: 0, blue: 1, alpha: 1)
+        ]
+        
+        let size = 5
+        let gradientColors = colors.gradientColors(in: 5)
+        
+        let gradientColorsExpectation: [CGColor] = [
+            .init(red: 1.0, green: 0.0, blue: 0.0, alpha: 1),
+            .init(red: 0.5, green: 0.5, blue: 0.0, alpha: 1),
+            .init(red: 0.0, green: 1.0, blue: 0.0, alpha: 1),
+            .init(red: 0.0, green: 0.5, blue: 0.5, alpha: 1),
+            .init(red: 0.0, green: 0.0, blue: 1.0, alpha: 1)
+        ]
+        
+        let accuracy = 0.000000001
+        gradientColors.enumerated().forEach { index, color in
+            color.components?.enumerated().forEach({ componentIndex, value in
+                let valueExpectation = gradientColorsExpectation[index].components![componentIndex]
+                XCTAssertEqual(value, valueExpectation, accuracy: accuracy)
+            })
+        }
+    }
 
 }

@@ -9,7 +9,7 @@
 import CoreGraphics.CGColor
 
 extension Array where Element == CGColor {
-    func gradientColor(percent: CGFloat) -> CGColor {
+    public func gradientColor(percent: CGFloat) -> CGColor {
         let percentage: CGFloat = Swift.max(Swift.min(percent, 100), 0) / 100
         switch percentage {
         case 0:
@@ -50,7 +50,7 @@ extension Array where Element == CGColor {
         }
     }
     
-    func gradientColor(at point: CGFloat, size: CGFloat) -> CGColor {
+    public func gradientColor(at point: CGFloat, size: CGFloat) -> CGColor {
         guard point <= size,
               point >= 0,
               size >= 1,
@@ -97,7 +97,7 @@ extension Array where Element == CGColor {
         }
     }
     
-    func gradientColors(in size: CGFloat) -> Self {
+    public func gradientColors(in size: CGFloat) -> Self {
         var result: Self = []
         for point in 0...Int(size) {
             let color = self.gradientColor(at: CGFloat(point), size: size)

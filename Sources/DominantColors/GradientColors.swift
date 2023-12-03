@@ -52,18 +52,18 @@ extension Array where Element == CGColor {
     
     public func gradientColor(at point: CGFloat, size: CGFloat) -> CGColor {
         guard point <= size,
-              point >= 0,
-              size >= 1,
-              count > 1
+              point >= 1,
+              size >= 2,
+              count >= 2
         else { return .clear }
         
         switch point {
-        case 0:
+        case 1:
             return first ?? .clear
         case size:
             return last ?? .clear
         default:
-            let percentage: CGFloat = point / size
+            let percentage: CGFloat = (point - 1) / (size - 1)
             let approxIndex = percentage / (1 / CGFloat(count - 1))
             let firstIndex = Int(approxIndex.rounded(.down))
             let secondIndex = Int(approxIndex.rounded(.up))
@@ -99,7 +99,7 @@ extension Array where Element == CGColor {
     
     public func gradientColors(in size: CGFloat) -> Self {
         var result: Self = []
-        for point in 0...Int(size) {
+        for point in 1...Int(size) {
             let color = self.gradientColor(at: CGFloat(point), size: size)
             result.append(color)
         }

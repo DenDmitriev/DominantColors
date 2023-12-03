@@ -29,7 +29,7 @@ final class GradientColorsTests: XCTestCase {
             .init(red: 0, green: 0, blue: 0, alpha: 1)
         ]
         
-        let colorAtStart = colors.gradientColor(at: 0, size: 3)
+        let colorAtStart = colors.gradientColor(at: 1, size: 3)
         let colorAtFinal = colors.gradientColor(at: 3, size: 3)
         
         XCTAssertEqual(colorAtStart, colors.first)
@@ -55,7 +55,7 @@ final class GradientColorsTests: XCTestCase {
             .init(red: 1, green: 0, blue: 1, alpha: 1)
         ]
         
-        let colorMiddle = colors.gradientColor(at: 5, size: 10)
+        let colorMiddle = colors.gradientColor(at: 2, size: 3)
         
         let colorMiddleExpectation = CGColor(red: 0.5, green: 0.5, blue: 0.5, alpha: 1)
         
@@ -67,7 +67,7 @@ final class GradientColorsTests: XCTestCase {
             .init(red: 0, green: 0, blue: 1, alpha: 1),
             .init(red: 1, green: 0, blue: 0, alpha: 1)
         ]
-        let size: CGFloat = 10
+        let size: CGFloat = 11
         
         let gradientColorsExpectation: [CGColor] = [
             .init(red: 0.0, green: 0, blue: 1.0, alpha: 1),

@@ -6,6 +6,10 @@
 // https://stackoverflow.com/questions/15032562/ios-find-color-at-point-between-two-colors
 //
 
+#if canImport(UIKit)
+import UIKit
+#endif
+
 import CoreGraphics.CGColor
 
 extension Array where Element == CGColor {
@@ -107,4 +111,9 @@ extension Array where Element == CGColor {
     }
 }
 
+#if canImport(UIKit)
+extension CGColor {
+    fileprivate static var clear: CGColor { UIColor.clear.cgColor }
+}
+#endif
 

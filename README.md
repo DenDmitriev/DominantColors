@@ -51,7 +51,11 @@ let cgColors = try DominantColors.dominantColors(image: cgImage, algorithm: .are
 ```
 
 ## Example
-Use the macOS example [ImageColors](https://github.com/DenDmitriev/DominantColors/tree/main/Example/ImageColors) project included in this repository to find examples of various DominantColors features.
+- macOS
+Use the macOS example [macOSImageColors](https://github.com/DenDmitriev/DominantColors/tree/main/Example/macOSImageColors) project included in this repository to find examples of various DominantColors features.
+
+- iOS
+Use the iOS example [iOSDemoDominationColor](https://github.com/DenDmitriev/DominantColors/tree/main/Example/iOSDemoDominationColor) for acquaintance.
 
 ## Installation
 
@@ -62,7 +66,7 @@ Once you have your Swift package set up, adding DominantColors as a dependency i
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/DenDmitriev/DominantColors.git", .upToNextMajor(from: "1.0.5"))
+    .package(url: "https://github.com/DenDmitriev/DominantColors.git", .upToNextMajor(from: "1.1.1"))
 ]
 ```
 

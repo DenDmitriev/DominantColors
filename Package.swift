@@ -6,7 +6,7 @@ import PackageDescription
 let package = Package(
     name: "DominantColors",
     platforms: [
-        .macOS(.v10_15),
+        .macOS(.v11),
         .iOS(.v13),
         .tvOS(.v13),
         .watchOS(.v6)

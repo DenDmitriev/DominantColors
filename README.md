@@ -1,6 +1,7 @@
 # DominantColors
 
-A library for extracting color from an image.
+A library for extracting color from an image. 
+*Сurrent version 1.1.0*
 
 - [Features](#features)
 - [Installation](#installation)

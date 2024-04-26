@@ -42,6 +42,20 @@ public enum DominantColorQuality {
         }
     }
     
+    /// NSNumber for attribute type for CIPixellate filter pixel size.
+    var pixellateScale: NSNumber {
+        switch self {
+        case .low:
+            return 64
+        case .fair:
+            return 32
+        case .high:
+            return 16
+        case .best:
+            return 8
+        }
+    }
+    
     /// Returns a new size (with the same aspect ratio) that takes into account the quality to match.
     /// For example with a `.low` quality, the returned size will be much smaller.
     /// On the opposite, with a `.best` quality, the returned size will be identical to the original size.

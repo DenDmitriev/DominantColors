@@ -24,12 +24,13 @@ struct LabCalculator {
     static let referenceY: CGFloat = 100.0
     static let referenceZ: CGFloat = 108.883
     
+    /// http://www.brucelindbloom.com/index.html?Eqn_XYZ_to_Lab.html
     static func convert(XYZ: XYZ) -> Lab {
         func transform(value: CGFloat) -> CGFloat {
-            if value > 0.008856 {
-                return pow(value, 1 / 3)
+            if value > pow(6/29, 3) {
+                return pow(value, 1/3)
             } else {
-                return (7.787 * value) + (16 / 116)
+                return (pow(29/3, 3) * value + 16) / 116
             }
         }
         
@@ -37,9 +38,9 @@ struct LabCalculator {
         let Y = transform(value: XYZ.Y / referenceY)
         let Z = transform(value: XYZ.Z / referenceZ)
         
-        let L = ((116.0 * Y) - 16.0).rounded(.toNearestOrEven, precision: 100)
-        let a = (500.0 * (X - Y)).rounded(.toNearestOrEven, precision: 100)
-        let b = (200.0 * (Y - Z)).rounded(.toNearestOrEven, precision: 100)
+        let L = ((116.0 * Y) - 16.0).rounded(.toNearestOrAwayFromZero, precision: 10000)
+        let a = (500.0 * (X - Y)).rounded(.toNearestOrAwayFromZero, precision: 10000)
+        let b = (200.0 * (Y - Z)).rounded(.toNearestOrAwayFromZero, precision: 10000)
         
         return Lab(L: L, a: a, b: b)
     }

@@ -10,43 +10,175 @@ import SwiftUI
 @available(macOS 14.0, *)
 struct Preview: View {
     
+    private static let images = ["TestPixeleate", "WaterLife", "ComeTogether", "TestPaletteSize"]
+    @State private var selection: String = Self.images.first ?? ""
     @State private var nsImage: NSImage?
+    @State private var cgImage: CGImage?
+    @State private var cgImageSize: NSSize = .zero
     @State private var colors = [Color]()
+    @State private var sorting: DominantColors.Sort = .frequency
+    @State private var method: DeltaEFormula = .CIE76
+    @State private var pureBlack: Bool = true
+    @State private var pureWhite: Bool = true
+    @State private var deltaColor: Int = 10
     
     var body: some View {
-        VStack(spacing: 0) {
-            if let nsImage {
-                Image(nsImage: nsImage)
-                    .resizable()
-                    .scaledToFill()
-            } else {
-                placeholderImage
-            }
-            
-            HStack(spacing: .zero) {
-                if !colors.isEmpty, nsImage != nil {
-                    ForEach(Array(zip(colors.indices, colors)), id: \.0) { index, color in
-                        Rectangle()
-                            .fill(color)
+        VStack {
+            // Image group
+            VStack(spacing: 0) {
+                ZStack {
+                    Rectangle()
+                        .fill(.separator)
+                    Group {
+                            if let nsImage {
+                                HStack {
+                                    Image(nsImage: nsImage)
+                                        .resizable()
+                                        .aspectRatio(contentMode: .fit)
+                                    if let pixellateImage = pixellate(nsImage: nsImage, by: .fair) {
+                                        Image(nsImage: pixellateImage)
+                                            .resizable()
+                                            .aspectRatio(contentMode: .fit)
+                                            .border(Color.black)
+                                    } else {
+                                        placeholderImage
+                                    }
+                                }
+                            } else {
+                                placeholderImage
+                            }
+                            
+                            
                     }
-                } else {
-                    if nsImage != nil {
-                        ProgressView()
-                            .tint(.white)
+                    .overlay(alignment: .bottom) {
+                        HStack {
+                            ForEach(Preview.images, id: \.self) { nameImage in
+                                Circle()
+                                    .fill(nameImage == selection ? .blue : .gray)
+                                    .frame(width: 5)
+                                    .onTapGesture {
+                                        selection = nameImage
+                                    }
+                            }
+                        }
+                        .padding(.horizontal, 10)
+                        .padding(.vertical, 5)
+                        .background {
+                            Capsule()
+                                .fill(.background)
+                        }
+                        .padding()
+                    }
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 200)
+                    .onChange(of: selection) { newSelection in
+                        loadImage(newSelection)
                     }
                 }
-            }
-            .onChange(of: nsImage) { newImage in
-                if let newImage {
+                
+                HStack(spacing: 3) {
+                    if !colors.isEmpty, nsImage != nil {
+                        ForEach(Array(zip(colors.indices, colors)), id: \.0) { index, color in
+                            Rectangle()
+                                .fill(color)
+                        }
+                    } else {
+                        if nsImage != nil {
+                            ProgressView()
+                                .tint(.white)
+                                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                        }
+                    }
+                }
+                .padding(3)
+                .background(.separator)
+                .onChange(of: nsImage) { newImage in
                     refreshColors(from: newImage)
                 }
+                .frame(height: 50)
+                .frame(maxWidth: .infinity)
             }
-            .frame(height: 100)
             
+            // Setting group
+            VStack {
+                HStack(spacing: 16) {
+                    Picker("Sorting", selection: $sorting) {
+                        ForEach(DominantColors.Sort.allCases) { sorting in
+                            Text(sorting.name)
+                                .tag(sorting)
+                        }
+                    }
+                    .pickerStyle(.menu)
+                    .frame(maxWidth: 160)
+                    .onChange(of: sorting) { _ in
+                        refreshColors(from: nsImage)
+                    }
+                    
+                    Picker("Method", selection: $method) {
+                        ForEach(DeltaEFormula.allCases) { method in
+                            Text(method.method)
+                                .tag(method)
+                        }
+                    }
+                    .pickerStyle(.menu)
+                    .onChange(of: method) { _ in
+                        refreshColors(from: nsImage)
+                    }
+                    .frame(maxWidth: 160)
+                    
+                    HStack {
+                        Text("Color Delta")
+                        TextField("Delta", value: $deltaColor, format: .number)
+                            .frame(width: 40)
+                    }
+                    
+                    Spacer()
+                }
+                
+                HStack(spacing: 24) {
+                    Toggle("Pure black", isOn: $pureBlack)
+                        .onChange(of: pureBlack) { _ in
+                            refreshColors(from: nsImage)
+                        }
+                    
+                    Toggle("Pure white", isOn: $pureWhite)
+                        .onChange(of: pureWhite) { _ in
+                            refreshColors(from: nsImage)
+                        }
+                    
+                    Spacer()
+                }
+            }
+            .padding()
+            
+            HStack {
+                Text("Colors count: \(colors.count)")
+                
+                Spacer()
+                
+                Button(action: {
+                    if let nsImage {
+                        refreshColors(from: nsImage)
+                    }
+                }, label: {
+                    Image(systemName: "arrow.clockwise.circle.fill")
+                })
+                .disabled(colors.isEmpty)
+            }
+            .padding()
         }
         .onAppear {
-            loadImage("WaterLife1")
+            loadImage(selection)
         }
+    }
+    
+    private func colorDescription(_ cgColor: CGColor) -> some View {
+        VStack {
+            Text("\(Int(cgColor.red255))")
+            Text("\(Int(cgColor.green255))")
+            Text("\(Int(cgColor.blue255))")
+        }
+        .foregroundStyle(Color(cgColor: cgColor.complementaryColor))
     }
     
     private var placeholderImage: some View {
@@ -62,20 +194,69 @@ struct Preview: View {
         DispatchQueue.main.async {
             self.nsImage = nsImage
         }
+        
+        if let nsImage {
+            guard let cgImage = nsImage.cgImage(forProposedRect: nil, context: nil, hints: nil) else { return }
+            let targetSize = DominantColorQuality.fair.targetSize(for: cgImage.resolution)
+            
+            DispatchQueue.main.async {
+                cgImageSize = NSSize(width: targetSize.width, height: targetSize.height)
+                let resizedCGImage = cgImage.resize(to: targetSize)
+                self.cgImage = resizedCGImage
+            }
+        }
     }
     
-    private func refreshColors(from nsImage: NSImage) {
+    private func refreshColors(from nsImage: NSImage?) {
+        guard let nsImage else { return }
+        
         colors.removeAll()
         
         guard let cgImage = nsImage.cgImage(forProposedRect: nil, context: nil, hints: nil) else { return }
-
-        do {
-            let cgColors = try DominantColors.dominantColors(image: cgImage, dominationColors: 8, flags: [.excludeBlack, .excludeWhite])
-            DispatchQueue.main.async {
-                self.colors = cgColors.map({ Color(cgColor: $0) })
+        
+        var flags = [DominantColors.Flag]()
+        if pureBlack {
+            flags.append(.excludeBlack)
+        }
+        if pureWhite {
+            flags.append(.excludeWhite)
+        }
+        
+        DispatchQueue.global(qos: .userInitiated).async {
+            do {
+                let cgColors = try DominantColors.dominantColors(
+                    image: cgImage,
+                    algorithm: .iterative(formula: method),
+                    dominationColors: 24,
+                    flags: flags,
+                    sorting: sorting,
+                    deltaColors: CGFloat(deltaColor),
+                    time: false
+                )
+                DispatchQueue.main.async {
+                    self.colors = cgColors.map({ Color(cgColor: $0) })
+                }
+            } catch {
+                print(error.localizedDescription)
             }
-        } catch {
-            print(error.localizedDescription)
+        }
+    }
+    
+    private func pixellate(nsImage: NSImage, by quality: DominantColorQuality = .fair) -> NSImage? {
+        guard let cgImage = nsImage.cgImage(forProposedRect: nil, context: nil, hints: nil) else { return nil }
+        guard let filter = CIFilter(name: "CIPixellate") else { return nil }
+        let beginImage = CIImage(cgImage: cgImage)
+        filter.setValue(beginImage, forKey: kCIInputImageKey)
+        filter.setValue(32, forKey: kCIInputScaleKey)
+        guard let outputImage = filter.outputImage else { return nil }
+        
+        let context = CIContext()
+
+        if let outputCGImage = context.createCGImage(outputImage, from: outputImage.extent) {
+           
+            return NSImage(cgImage: outputCGImage, size: NSSize(width: outputCGImage.width, height: outputCGImage.height))
+        } else {
+            return nil
         }
     }
 }
@@ -83,5 +264,5 @@ struct Preview: View {
 @available(macOS 14.0, *)
 #Preview {
     Preview()
-        .frame(width: 640, height: 460)
+        .frame(width: 600)
 }

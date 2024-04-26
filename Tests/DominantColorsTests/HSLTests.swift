@@ -55,9 +55,9 @@ class HSLTests: XCTestCase {
     func testArbitrary() {
         let color = CGColor(red: 129.0 / 255.0, green: 200.0 / 255.0, blue: 10.0 / 255.0, alpha: 1.0)
         
-        let roundHue = (color.hue * 10).rounded() / 10
-        let roundLightness = (color.lightness * 10).rounded() / 10
-        let roundSaturation = (color.saturation * 10).rounded() / 10
+        let roundHue = color.hue.rounded(.toNearestOrAwayFromZero, precision: 10)
+        let roundLightness = color.lightness.rounded(.toNearestOrAwayFromZero, precision: 10)
+        let roundSaturation = color.saturation.rounded(.toNearestOrAwayFromZero, precision: 10)
         
         XCTAssertEqual(roundHue, 82.4)
         XCTAssertEqual(roundSaturation, 90.5)

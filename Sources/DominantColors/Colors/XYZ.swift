@@ -19,18 +19,18 @@ struct XYZCalculator {
         func transform(value: CGFloat) -> CGFloat {
             if value > 0.04045 {
                 return pow((value + 0.055) / 1.055, 2.4)
+            } else {
+                return value / 12.92
             }
-            
-            return value / 12.92
         }
         
         let red = transform(value: rgb.R) * 100.0
         let green = transform(value: rgb.G) * 100.0
         let blue = transform(value: rgb.B) * 100.0
         
-        let X = (red * 0.4124 + green * 0.3576 + blue * 0.1805).rounded(.toNearestOrEven, precision: 100)
-        let Y = (red * 0.2126 + green * 0.7152 + blue * 0.0722).rounded(.toNearestOrEven, precision: 100)
-        let Z = (red * 0.0193 + green * 0.1192 + blue * 0.9505).rounded(.toNearestOrEven, precision: 100)
+        let X = (red * 0.4124564 + green * 0.3575761 + blue * 0.1804375).rounded(.toNearestOrAwayFromZero, precision: 10000)
+        let Y = (red * 0.2126729 + green * 0.7151522 + blue * 0.0721750).rounded(.toNearestOrAwayFromZero, precision: 10000)
+        let Z = (red * 0.0193339 + green * 0.1191920 + blue * 0.9503041).rounded(.toNearestOrAwayFromZero, precision: 10000)
 
         return XYZ(X: X, Y: Y, Z: Z)
     }

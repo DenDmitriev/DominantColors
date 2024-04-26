@@ -9,6 +9,7 @@
 import XCTest
 @testable import DominantColors
 
+/// http://www.brucelindbloom.com/index.html?Eqn_XYZ_to_Lab.html
 class ComparisonTests: XCTestCase {
     
     // MARK: - Euclidean
@@ -40,7 +41,7 @@ class ComparisonTests: XCTestCase {
         let color2 = CGColor.black
         
         let difference = color1.difference(from: color2, using: .euclidean).associatedValue
-        XCTAssertEqual(difference, 441.67)
+        XCTAssertEqual(difference, 441.673)
         
         let reversedDifference = color2.difference(from: color1, using: .euclidean).associatedValue
         XCTAssertEqual(reversedDifference, difference)
@@ -51,7 +52,7 @@ class ComparisonTests: XCTestCase {
         let color2 = CGColor(red: 127.5 / 255.0, green: 25.5 / 255.0, blue: 51.0 / 255.0, alpha: 1.0)
 
         let difference = color1.difference(from: color2, using: .euclidean).associatedValue
-        XCTAssertEqual(difference, 171.06)
+        XCTAssertEqual(difference, 171.059)
         
         let reversedDifference = color2.difference(from: color1, using: .euclidean).associatedValue
         XCTAssertEqual(reversedDifference, difference)
@@ -108,7 +109,7 @@ class ComparisonTests: XCTestCase {
         let color2 = CGColor(red: 127.5 / 255.0, green: 25.5 / 255.0, blue: 51.0 / 255.0, alpha: 1.0)
         
         let difference = color1.difference(from: color2, using: .CIE76).associatedValue
-        XCTAssertEqual(difference, 67.55)
+        XCTAssertEqual(difference, 67.584)
         
         let reversedDifference = color2.difference(from: color1, using: .CIE76).associatedValue
         XCTAssertEqual(reversedDifference, difference)
@@ -119,7 +120,7 @@ class ComparisonTests: XCTestCase {
         let color2 = CGColor(red: 171.0 / 255.0, green: 173.0 / 255.0, blue: 50.0 / 255.0, alpha: 1.0)
 
         let difference = color1.difference(from: color2, using: .CIE76).associatedValue
-        XCTAssertEqual(difference, 14.25)
+        XCTAssertEqual(difference, 14.263)
         
         let reversedDifference = color2.difference(from: color1, using: .CIE76).associatedValue
         XCTAssertEqual(reversedDifference, difference)
@@ -150,8 +151,8 @@ class ComparisonTests: XCTestCase {
     }
     
     func testWhiteBlackCIE94() {
-        let color1 = CGColor.white
-        let color2 = CGColor.black
+        let color1 = CGColor(red: 1, green: 1, blue: 1, alpha: 1)
+        let color2 = CGColor(red: 0, green: 0, blue: 0, alpha: 0)
         
         let difference = color1.difference(from: color2, using: .CIE94).associatedValue
         XCTAssertEqual(difference, 100.0)
@@ -165,10 +166,10 @@ class ComparisonTests: XCTestCase {
         let color2 = CGColor(red: 127.5 / 255.0, green: 25.5 / 255.0, blue: 51.0 / 255.0, alpha: 1.0)
 
         let difference = color1.difference(from: color2, using: .CIE94).associatedValue
-        XCTAssertEqual(difference, 48.31)
+        XCTAssertEqual(difference, 48.329)
         
         let reversedDifference = color2.difference(from: color1, using: .CIE94).associatedValue
-        XCTAssertEqual(reversedDifference, 43.99)
+        XCTAssertEqual(reversedDifference, 43.988)
     }
     
     func testCloseCIE94() {
@@ -176,10 +177,10 @@ class ComparisonTests: XCTestCase {
         let color2 = CGColor(red: 171.0 / 255.0, green: 173.0 / 255.0, blue: 50.0 / 255.0, alpha: 1.0)
 
         let difference = color1.difference(from: color2, using: .CIE94).associatedValue
-        XCTAssertEqual(difference, 9.5)
+        XCTAssertEqual(difference, 9.511)
         
         let reversedDifference = color2.difference(from: color1, using: .CIE94).associatedValue
-        XCTAssertEqual(reversedDifference, 9.6)
+        XCTAssertEqual(reversedDifference, 9.607)
     }
 
 

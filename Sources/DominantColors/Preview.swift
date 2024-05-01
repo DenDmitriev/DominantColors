@@ -10,7 +10,7 @@ import SwiftUI
 @available(macOS 14.0, *)
 struct Preview: View {
     
-    private static let images = ["WaterLife", "ComeTogether", "TestPaletteSize"]
+    private static let images = ["LittleMissSunshine", "bladerunner056", "TheLifeAquaticWithSteveZissou", "ComeTogether", "Reader"]
     @State private var selection: String = Self.images.first ?? ""
     @State private var nsImage: NSImage?
     @State private var cgImage: CGImage?
@@ -166,15 +166,6 @@ struct Preview: View {
         }
     }
     
-    private func colorDescription(_ cgColor: CGColor) -> some View {
-        VStack {
-            Text("\(Int(cgColor.red255))")
-            Text("\(Int(cgColor.green255))")
-            Text("\(Int(cgColor.blue255))")
-        }
-        .foregroundStyle(Color(cgColor: cgColor.complementaryColor))
-    }
-    
     private var placeholderImage: some View {
         Text("No image")
             .foregroundStyle(.gray)
@@ -187,17 +178,6 @@ struct Preview: View {
         
         DispatchQueue.main.async {
             self.nsImage = nsImage
-        }
-        
-        if let nsImage {
-            guard let cgImage = nsImage.cgImage(forProposedRect: nil, context: nil, hints: nil) else { return }
-            let targetSize = DominantColorQuality.fair.targetSize(for: cgImage.resolution)
-            
-            DispatchQueue.main.async {
-                cgImageSize = NSSize(width: targetSize.width, height: targetSize.height)
-                let resizedCGImage = cgImage.resize(to: targetSize)
-                self.cgImage = resizedCGImage
-            }
         }
     }
     
@@ -217,7 +197,7 @@ struct Preview: View {
             do {
                 let cgColors = try DominantColors.dominantColors(
                     image: cgImage,
-                        quality: .fair,
+                    quality: .fair,
                     algorithm: .iterative(formula: method),
                     maxCount: 6,
                     options: flags,

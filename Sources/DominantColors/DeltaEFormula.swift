@@ -28,7 +28,7 @@ public enum DeltaEFormula: Int, CaseIterable, Identifiable {
     /// The quasimetric has two parameters: lightness (l) and chroma (c), allowing the users to weight the difference based on the ratio of l:c that is deemed appropriate for the application.
     case CMC
     
-    var method: String {
+    public var method: String {
         switch self {
         case .euclidean:
             "Euclidean"

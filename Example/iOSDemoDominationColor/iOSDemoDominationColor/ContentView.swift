@@ -140,7 +140,7 @@ extension ContentView {
     private func refreshColors(from cgImage: CGImage){
         colors.removeAll()
         Task {
-            guard let cgColors = try? DominantColors.dominantColors(image: cgImage, dominationColors: 8, flags: [.excludeBlack, .excludeWhite])
+            guard let cgColors = try? DominantColors.dominantColors(image: cgImage, maxCount: 8, options: [.excludeBlack, .excludeWhite])
             else { return }
             
             

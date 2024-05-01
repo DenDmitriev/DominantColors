@@ -6,7 +6,6 @@
 //
 
 import CoreImage
-import AppKit.NSColor
 
 public struct HSL {
     let hue: Double

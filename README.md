@@ -1,7 +1,7 @@
 # DominantColors
 
 A library for extracting color from an image. 
-*Сurrent version 1.1.2*
+*Сurrent version 1.1.3*
 
 - [Features](#features)
 - [Installation](#installation)
@@ -82,7 +82,7 @@ Once you have your Swift package set up, adding DominantColors as a dependency i
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/DenDmitriev/DominantColors.git", .upToNextMajor(from: "1.1.2"))
+    .package(url: "https://github.com/DenDmitriev/DominantColors.git", .upToNextMajor(from: "1.1.3"))
 ]
 ```
 

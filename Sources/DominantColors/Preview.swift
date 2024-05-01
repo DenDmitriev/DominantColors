@@ -10,7 +10,7 @@ import SwiftUI
 @available(macOS 14.0, *)
 struct Preview: View {
     
-    private static let images = ["TestPixeleate", "WaterLife", "ComeTogether", "TestPaletteSize"]
+    private static let images = ["WaterLife", "ComeTogether", "TestPaletteSize"]
     @State private var selection: String = Self.images.first ?? ""
     @State private var nsImage: NSImage?
     @State private var cgImage: CGImage?
@@ -20,6 +20,7 @@ struct Preview: View {
     @State private var method: DeltaEFormula = .CIE76
     @State private var pureBlack: Bool = true
     @State private var pureWhite: Bool = true
+    @State private var pureGray: Bool = true
     @State private var deltaColor: Int = 10
     
     var body: some View {
@@ -30,25 +31,13 @@ struct Preview: View {
                     Rectangle()
                         .fill(.separator)
                     Group {
-                            if let nsImage {
-                                HStack {
-                                    Image(nsImage: nsImage)
-                                        .resizable()
-                                        .aspectRatio(contentMode: .fit)
-                                    if let pixellateImage = pixellate(nsImage: nsImage, by: .fair) {
-                                        Image(nsImage: pixellateImage)
-                                            .resizable()
-                                            .aspectRatio(contentMode: .fit)
-                                            .border(Color.black)
-                                    } else {
-                                        placeholderImage
-                                    }
-                                }
-                            } else {
-                                placeholderImage
-                            }
-                            
-                            
+                        if let nsImage {
+                            Image(nsImage: nsImage)
+                                .resizable()
+                                .aspectRatio(contentMode: .fit)
+                        } else {
+                            placeholderImage
+                        }
                     }
                     .overlay(alignment: .bottom) {
                         HStack {
@@ -146,6 +135,11 @@ struct Preview: View {
                             refreshColors(from: nsImage)
                         }
                     
+                    Toggle("Pure gray", isOn: $pureGray)
+                        .onChange(of: pureGray) { _ in
+                            refreshColors(from: nsImage)
+                        }
+                    
                     Spacer()
                 }
             }
@@ -214,21 +208,19 @@ struct Preview: View {
         
         guard let cgImage = nsImage.cgImage(forProposedRect: nil, context: nil, hints: nil) else { return }
         
-        var flags = [DominantColors.Flag]()
-        if pureBlack {
-            flags.append(.excludeBlack)
-        }
-        if pureWhite {
-            flags.append(.excludeWhite)
-        }
+        var flags = [DominantColors.Options]()
+        if pureBlack { flags.append(.excludeBlack) }
+        if pureWhite { flags.append(.excludeWhite) }
+        if pureGray { flags.append(.excludeGray) }
         
         DispatchQueue.global(qos: .userInitiated).async {
             do {
                 let cgColors = try DominantColors.dominantColors(
                     image: cgImage,
+                        quality: .fair,
                     algorithm: .iterative(formula: method),
-                    dominationColors: 24,
-                    flags: flags,
+                    maxCount: 6,
+                    options: flags,
                     sorting: sorting,
                     deltaColors: CGFloat(deltaColor),
                     time: false
@@ -239,24 +231,6 @@ struct Preview: View {
             } catch {
                 print(error.localizedDescription)
             }
-        }
-    }
-    
-    private func pixellate(nsImage: NSImage, by quality: DominantColorQuality = .fair) -> NSImage? {
-        guard let cgImage = nsImage.cgImage(forProposedRect: nil, context: nil, hints: nil) else { return nil }
-        guard let filter = CIFilter(name: "CIPixellate") else { return nil }
-        let beginImage = CIImage(cgImage: cgImage)
-        filter.setValue(beginImage, forKey: kCIInputImageKey)
-        filter.setValue(32, forKey: kCIInputScaleKey)
-        guard let outputImage = filter.outputImage else { return nil }
-        
-        let context = CIContext()
-
-        if let outputCGImage = context.createCGImage(outputImage, from: outputImage.extent) {
-           
-            return NSImage(cgImage: outputCGImage, size: NSSize(width: outputCGImage.width, height: outputCGImage.height))
-        } else {
-            return nil
         }
     }
 }

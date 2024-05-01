@@ -6,6 +6,7 @@
 //
 
 import CoreImage
+import AppKit.NSColor
 
 public struct HSL {
     let hue: Double
@@ -28,6 +29,10 @@ public struct HSL {
         self.hue = hue
         self.saturation = saturation
         self.lightness = lightness
+    }
+    
+    var cgColor: CGColor {
+        HSLCalculator.convert(hue: hue, saturation: saturation, lightness: lightness)
     }
 }
 
@@ -82,6 +87,60 @@ struct HSLCalculator {
         }
         
         return HSL(hue: hue * 60, saturation: saturation * 100, lightness: lightness * 100)
+    }
+    
+    /// Convert HSL to CGColor color
+    /// Converts an HSL color value to RGB. .
+    /// Assumes h, s, and l are contained in the set [0, 1] and returns RGB in the set [0, 255].
+    ///
+    /// - Parameters:
+    ///     - HUE: 0...360 degree in color circle.
+    ///     - Saturation: 0...100 percent.
+    ///     - Lightness: 0...100 percent..
+    ///
+    ///  - Returns:`CGColor` color in sRGB color space.
+    ///
+    /// [Conversion formula.](http://en.wikipedia.org/wiki/HSL_color_space)
+    static func convert(hue: CGFloat, saturation: CGFloat, lightness: CGFloat) -> CGColor {
+        guard saturation != .zero else {
+            let ligtness = lightness / 100
+            return CGColor(srgbRed: ligtness, green: ligtness, blue: ligtness, alpha: 1.0)
+        }
+        
+        let hue = hue / 360
+        let saturation = saturation / 100
+        let lightness = lightness / 100
+        
+        let q = lightness < 0.5 ? lightness * (1 + saturation) : lightness + saturation - lightness * saturation
+        let p = 2 * lightness - q
+        let r = hue2rgb(p, q, hue + 1/3)
+        let g = hue2rgb(p, q, hue)
+        let b = hue2rgb(p, q, hue - 1/3)
+        
+        return CGColor(srgbRed: r, green: g, blue: b, alpha: 1.0)
+    }
+    
+    /// Converts an HUE to red, green or blue.
+    ///  - Returns: `CGFloat` in 0...1.
+    static private func hue2rgb(_ p: CGFloat, _ q: CGFloat, _ t: CGFloat) -> CGFloat {
+        var t = t
+        
+        if t < 0 { t += 1 }
+        if t > 1 { t -= 1 }
+        
+        if t < 1/6 {
+            return p + (q - p) * 6 * t
+        }
+        
+        if t < 1/2 {
+            return q
+        }
+        
+        if t < 2/3 {
+            return p + (q - p) * (2/3 - t) * 6
+        }
+        
+        return p
     }
 }
 

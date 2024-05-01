@@ -63,4 +63,30 @@ class HSLTests: XCTestCase {
         XCTAssertEqual(roundSaturation, 90.5)
         XCTAssertEqual(roundLightness, 41.2)
     }
+    
+    func testHSLToCGColor() {
+        let white = HSL(hue: 0, saturation: 100, lightness: 100)
+        XCTAssertEqual(white.cgColor, CGColor(srgbRed: 1, green: 1, blue: 1, alpha: 1))
+        
+        let gray = HSL(hue: 120, saturation: 0, lightness: 50)
+        XCTAssertEqual(gray.cgColor, CGColor(srgbRed: 50 / 100, green: 50 / 100, blue: 50 / 100, alpha: 1.0))
+        
+        let black = HSL(hue: 240, saturation: 75, lightness: 0)
+        XCTAssertEqual(black.cgColor, CGColor(srgbRed: 0, green: 0, blue: 0, alpha: 1))
+        
+        let red = HSL(hue: 0, saturation: 100, lightness: 50)
+        XCTAssertEqual(red.cgColor, CGColor(srgbRed: 1, green: 0, blue: 0, alpha: 1.0))
+        
+        let green = HSL(hue: 120, saturation: 100, lightness: 50)
+        XCTAssertEqual(green.cgColor, CGColor(srgbRed: 0, green: 1, blue: 0, alpha: 1.0))
+        
+        let blue = HSL(hue: 240, saturation: 100, lightness: 50)
+        XCTAssertEqual(blue.cgColor, CGColor(srgbRed: 0, green: 0, blue: 1, alpha: 1.0))
+        
+        let someYellow = HSL(hue: 47, saturation: 83, lightness: 53)
+        let expectationSomeYellow = CGColor(srgbRed: 235 / 255, green: 190 / 255, blue: 33 / 255, alpha: 1.0)
+        XCTAssertEqual(someYellow.cgColor.red255, expectationSomeYellow.red255, accuracy: 2)
+        XCTAssertEqual(someYellow.cgColor.green255, expectationSomeYellow.green255, accuracy: 2)
+        XCTAssertEqual(someYellow.cgColor.blue255, expectationSomeYellow.blue255, accuracy: 3)
+    }
 }

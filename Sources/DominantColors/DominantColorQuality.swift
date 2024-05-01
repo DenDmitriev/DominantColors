@@ -52,7 +52,7 @@ public enum DominantColorQuality {
         case .high:
             return 16
         case .best:
-            return 8
+            return 2
         }
     }
     

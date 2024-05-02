@@ -9,6 +9,23 @@ import Foundation
 import CoreImage
 
 extension DominantColors {
+    /// Extract the dominant colors of the image.
+    ///
+    /// Finds the dominant colors of an image by using using a area average algorithm with CIAreaAverage filter.
+    /// - Parameters:
+    ///  - image: Source image for extract colors.
+    ///  - count: Number of colors for the image.
+    ///  - sorting: Type of sorting sequence colors.
+    /// - Returns: Average colors, specified as an array of `CGColor` instances.
+    public static func averageColors(
+        image: CGImage,
+        count: Int = 8,
+        sorting: Sort = .frequency
+    ) throws -> [CGColor] {
+        let dominantColors = try areaAverageColors(image: image, count: UInt8(count), sorting: sorting)
+        return dominantColors
+    }
+    
     static func areaAverageColors(
         image: CGImage,
         count: UInt8,

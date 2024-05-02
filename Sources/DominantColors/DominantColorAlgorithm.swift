@@ -16,7 +16,7 @@ public enum DominantColorAlgorithm: Identifiable, Hashable {
     case kMeansClustering
     
     /// Finds the dominant colors of an image by using using a area average algorithm.
-    case areaAverage(count: UInt8)
+    case areaAverage
     
     var algorithm: String {
         switch self {

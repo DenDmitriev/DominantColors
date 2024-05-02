@@ -17,11 +17,12 @@ struct Preview: View {
     @State private var cgImageSize: CGSize = .zero
     @State private var colors = [Color]()
     @State private var sorting: DominantColors.Sort = .frequency
-    @State private var method: DeltaEFormula = .CIE76
+    @State private var algorithm: DeltaEFormula = .CIE76
     @State private var pureBlack: Bool = true
     @State private var pureWhite: Bool = true
     @State private var pureGray: Bool = true
     @State private var deltaColor: Int = 10
+    @State private var countColors: Int = 6
     
     var body: some View {
         VStack {
@@ -77,23 +78,32 @@ struct Preview: View {
                     }
                     HStack {
                         Text("Method")
-                        Picker("Method", selection: $method) {
-                            ForEach(DeltaEFormula.allCases) { method in
-                                Text(method.method)
-                                    .tag(method)
+                        Picker("Method", selection: $algorithm) {
+                            ForEach(DeltaEFormula.allCases) { algorithm in
+                                Text(algorithm.method)
+                                    .tag(algorithm)
                             }
                         }
                         .pickerStyle(.segmented)
-                        .onChange(of: method) { _ in
+                        .onChange(of: algorithm) { _ in
                             refreshColors(from: uiImage)
                         }
                     }
                     
-                    HStack {
-                        Text("Color Delta")
-                        TextField("Delta", value: $deltaColor, format: .number)
-                            .textFieldStyle(RoundedBorderTextFieldStyle())
-                            .frame(width: 64)
+                    HStack(spacing: 16) {
+                        HStack {
+                            Text("Color Delta")
+                            TextField("Delta", value: $deltaColor, format: .number)
+                                .textFieldStyle(RoundedBorderTextFieldStyle())
+                                .frame(width: 64)
+                        }
+                        
+                        HStack {
+                            Text("Color Count")
+                            TextField("Delta", value: $countColors, format: .number)
+                                .textFieldStyle(RoundedBorderTextFieldStyle())
+                                .frame(width: 64)
+                        }
                         
                         Spacer()
                     }
@@ -119,7 +129,7 @@ struct Preview: View {
                     
                     Spacer()
                     
-                    Text("Colors count: \(colors.count)")
+                    Text("Colors count result: \(colors.count)")
                 }
             }
             .padding()
@@ -168,8 +178,8 @@ struct Preview: View {
                 let cgColors = try DominantColors.dominantColors(
                     image: cgImage,
                     quality: .fair,
-                    algorithm: .iterative(formula: method),
-                    maxCount: 6,
+                    algorithm: algorithm,
+                    maxCount: countColors,
                     options: flags,
                     sorting: sorting,
                     deltaColors: CGFloat(deltaColor),

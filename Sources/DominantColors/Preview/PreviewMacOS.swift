@@ -17,11 +17,12 @@ struct Preview: View {
     @State private var cgImageSize: NSSize = .zero
     @State private var colors = [Color]()
     @State private var sorting: DominantColors.Sort = .frequency
-    @State private var method: DeltaEFormula = .CIE76
+    @State private var algorithm: DeltaEFormula = .CIE76
     @State private var pureBlack: Bool = true
     @State private var pureWhite: Bool = true
     @State private var pureGray: Bool = true
     @State private var deltaColor: Int = 10
+    @State private var countColors: Int = 6
     
     var body: some View {
         VStack {
@@ -103,14 +104,14 @@ struct Preview: View {
                         refreshColors(from: nsImage)
                     }
                     
-                    Picker("Method", selection: $method) {
-                        ForEach(DeltaEFormula.allCases) { method in
-                            Text(method.method)
-                                .tag(method)
+                    Picker("Method", selection: $algorithm) {
+                        ForEach(DeltaEFormula.allCases) { algorithm in
+                            Text(algorithm.method)
+                                .tag(algorithm)
                         }
                     }
                     .pickerStyle(.menu)
-                    .onChange(of: method) { _ in
+                    .onChange(of: algorithm) { _ in
                         refreshColors(from: nsImage)
                     }
                     .frame(maxWidth: 160)
@@ -139,6 +140,12 @@ struct Preview: View {
                         .onChange(of: pureGray) { _ in
                             refreshColors(from: nsImage)
                         }
+                    
+                    HStack {
+                        Text("Colors Count")
+                        TextField("Delta", value: $countColors, format: .number)
+                            .frame(width: 40)
+                    }
                     
                     Spacer()
                 }
@@ -198,8 +205,8 @@ struct Preview: View {
                 let cgColors = try DominantColors.dominantColors(
                     image: cgImage,
                     quality: .fair,
-                    algorithm: .iterative(formula: method),
-                    maxCount: 6,
+                    algorithm: algorithm,
+                    maxCount: countColors,
                     options: flags,
                     sorting: sorting,
                     deltaColors: CGFloat(deltaColor),

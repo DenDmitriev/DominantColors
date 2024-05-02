@@ -16,7 +16,7 @@ class DominantColorsTests: XCTestCase {
         let name = NSImage.Name("Green_Square")
         let nsImage = Bundle.module.image(forResource: name)
         let cgImage = nsImage!.cgImage(forProposedRect: nil, context: nil, hints: nil)!
-        let dominantColors = try DominantColors.dominantColorFrequencies(image: cgImage, with: .best)
+        let dominantColors = try DominantColors.dominantColorFrequencies(image: cgImage,         quality: .best)
         
         XCTAssertEqual(dominantColors.count, 1)
         
@@ -35,7 +35,7 @@ class DominantColorsTests: XCTestCase {
         let name = NSImage.Name("Black_White_Square")
         let nsImage = Bundle.module.image(forResource: name)
         let cgImage = nsImage!.cgImage(forProposedRect: nil, context: nil, hints: nil)!
-        let colorFrequencies = try DominantColors.dominantColorFrequencies(image: cgImage, with: .best)
+        let colorFrequencies = try DominantColors.dominantColorFrequencies(image: cgImage,         quality: .best)
         let dominantColors = colorFrequencies.map({ $0.color })
         
         XCTAssertEqual(dominantColors.count, 2)
@@ -56,7 +56,7 @@ class DominantColorsTests: XCTestCase {
         let name = NSImage.Name("Black_White_Red_Green_Blue_Grey")
         let nsImage = Bundle.module.image(forResource: name)
         let cgImage = nsImage!.cgImage(forProposedRect: nil, context: nil, hints: nil)!
-        let colorFrequencies = try DominantColors.dominantColorFrequencies(image: cgImage, with: .best, flags: [.excludeBlack, .excludeWhite])
+        let colorFrequencies = try DominantColors.dominantColorFrequencies(image: cgImage,         quality: .best, options: [.excludeBlack, .excludeWhite])
         
         let extractColorAfterBlackWhiteFilter = 5
 
@@ -67,7 +67,7 @@ class DominantColorsTests: XCTestCase {
         let name = NSImage.Name("Red_Green_Blue")
         let nsImage = Bundle.module.image(forResource: name)
         let cgImage = nsImage!.cgImage(forProposedRect: nil, context: nil, hints: nil)!
-        let colorFrequencies = try DominantColors.dominantColorFrequencies(image: cgImage, with: .best)
+        let colorFrequencies = try DominantColors.dominantColorFrequencies(image: cgImage,         quality: .best)
         let dominantColors = colorFrequencies.map({ $0.color })
 
         XCTAssertEqual(dominantColors.count, 3)
@@ -81,7 +81,7 @@ class DominantColorsTests: XCTestCase {
         let name = NSImage.Name("Red_Green_Blue_Black_Mini")
         let nsImage = Bundle.module.image(forResource: name)
         let cgImage = nsImage!.cgImage(forProposedRect: nil, context: nil, hints: nil)!
-        let colorFrequencies = try DominantColors.dominantColorFrequencies(image: cgImage, with: .best)
+        let colorFrequencies = try DominantColors.dominantColorFrequencies(image: cgImage,         quality: .best)
         let dominantColors = colorFrequencies.map({ $0.color })
 
         XCTAssertEqual(dominantColors.count, 4)
@@ -96,7 +96,7 @@ class DominantColorsTests: XCTestCase {
         let name = NSImage.Name("Red_Green_Blue_Random_Mini")
         let nsImage = Bundle.module.image(forResource: name)
         let cgImage = nsImage!.cgImage(forProposedRect: nil, context: nil, hints: nil)!
-        let colorFrequencies = try DominantColors.dominantColorFrequencies(image: cgImage, with: .best)
+        let colorFrequencies = try DominantColors.dominantColorFrequencies(image: cgImage,         quality: .best)
         let dominantColors = colorFrequencies.map({ $0.color })
 
         XCTAssertTrue(dominantColors.contains(CGColor(srgbRed: 1, green: 0, blue: 0, alpha: 1)))
@@ -109,7 +109,7 @@ class DominantColorsTests: XCTestCase {
         let name = NSImage.Name("WaterLife1")
         let nsImage = Bundle.module.image(forResource: name)
         let cgImage = nsImage!.cgImage(forProposedRect: nil, context: nil, hints: nil)!
-        let dominantColors = try DominantColors.dominantColorFrequencies(image: cgImage, with: .best, flags: [.excludeBlack, .excludeGray, .excludeWhite])
+        let dominantColors = try DominantColors.dominantColorFrequencies(image: cgImage,         quality: .best, options: [.excludeBlack, .excludeGray, .excludeWhite])
         
         XCTAssertGreaterThan(dominantColors.count, 12)
     }

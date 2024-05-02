@@ -9,21 +9,60 @@ import Foundation
 import CoreGraphics.CGImage
 
 extension DominantColors {
+    /// Extract the dominant colors of the image.
+    ///
+    /// All colors are combined together based on similarity.
+    /// This avoids having to deal with many shades of the same colors, which often happens when dealing with compression artifacts (jpegs, etc.).
+    /// - Parameters:
+    ///  - image: Source image for extract colors.
+    ///  - quality: The quality used to determine the dominant colors. A higher quality will yield more accurate results, but will be slower.
+    ///  - algorithm: The different algorithms for comparing colors.
+    ///  - maxCount: Maximum number of colors for the image.
+    ///  - options: Some of additional options for removing flowers.
+    ///  - sorting: Type of sorting sequence colors.
+    ///  - deltaColors: The score that needs to be met to consider two colors similar. The larger the value, the fewer shades will be obtained from the images
+    ///     - 10 by default to match similar shades
+    ///     - 2.3 approximately corresponds to the minimum difference between colors visible to the human eye.
+    /// - Returns: The dominant colors as array of `CGColor` instances.
+    public static func dominantColors(
+        image: CGImage,
+        quality: DominantColorQuality = .fair,
+        algorithm: DeltaEFormula = .CIE76,
+        maxCount: Int = 8,
+        options: [Options] = [],
+        sorting: Sort = .frequency,
+        deltaColors: CGFloat = 10,
+        time log: Bool = false
+    ) throws -> [CGColor] {
+        let dominantColorFrequencies = try dominantColorFrequencies(
+            image: image,
+                    quality: quality,
+            formula: algorithm,
+            maxCount: maxCount,
+            options: options,
+            sorting: sorting,
+            deltaColors: deltaColors,
+            islogging: log
+        )
+        let dominantColors = dominantColorFrequencies.map { $0.color }
+        return dominantColors
+    }
+    
     /// Attempts to computes the dominant colors of the image.
     /// This is not the absolute dominant colors, but instead colors that are similar are grouped together.
     /// This avoid having to deal with many shades of the same colors, which are frequent when dealing with compression artifacts (jpeg etc.).
     /// - Parameters:
     ///   - quality: The quality used to determine the dominant colors. A higher quality will yield more accurate results, but will be slower.
     /// - Returns: The dominant colors as an ordered array of `ColorFrequency` instances, where the first element is the most common one. The frequency is represented as a percentage ranging from 0 to 1.
-    public static func dominantColorFrequencies(
+    static func dominantColorFrequencies(
         image: CGImage,
-        with quality: DominantColorQuality = .fair,
-        using formula: DeltaEFormula = .CIE76,
-        dominationColors maxCount: Int = 99,
-        flags: [Options] = [],
+        quality: DominantColorQuality = .fair,
+        formula: DeltaEFormula = .CIE76,
+        maxCount: Int = 99,
+        options: [Options] = [],
         sorting: Sort = .frequency,
         deltaColors: CGFloat = 10,
-        time log: Bool = false
+        islogging: Bool = false
     ) throws -> [ColorFrequency] {
         let startTime = CFAbsoluteTimeGetCurrent()
         var processTime = startTime
@@ -42,7 +81,7 @@ extension DominantColors {
         case .best:
             break
         }
-        if log { Self.log(from: &processTime, label: "Step 1. Prepare image.") }
+        if islogging { Self.log(from: &processTime, label: "Step 1. Prepare image.") }
                 
         // ------
         // Step 2: Add each pixel to a NSCountedSet. This will give us a count for each color.
@@ -58,7 +97,7 @@ extension DominantColors {
         case .best:
             colorsCountedSet = try extractColors(image)
         }
-        if log { Self.log(from: &processTime, label: "Step 2. Get colors from pixels.") }
+        if islogging { Self.log(from: &processTime, label: "Step 2. Get colors from pixels.") }
         
         // ------
         // Step 3: Filtering pixel colors into shades. Remove colors that are barely present on the image.
@@ -72,8 +111,8 @@ extension DominantColors {
         case .best:
             minCountThreshold = 4
         }
-        let colorShades = filterColorsByShade(colorsCountedSet, colorSpace: colorSpace, minCount: minCountThreshold, flags: flags)
-        if log { Self.log(from: &processTime, label: "Step 3. Filter colors by shade.") }
+        let colorShades = filterColorsByShade(colorsCountedSet, colorSpace: colorSpace, minCount: minCountThreshold, flags: options)
+        if islogging { Self.log(from: &processTime, label: "Step 3. Filter colors by shade.") }
         
         // ------
         // Step 4: Sort the remaining colors by frequency and normality. Leave only the most normal and frequently occurring colors.
@@ -91,7 +130,7 @@ extension DominantColors {
                 return Array(colorFrequenciesArray)
             }
         }
-        if log { Self.log(from: &processTime, label: "Step 4. Sorting by normal.") }
+        if islogging { Self.log(from: &processTime, label: "Step 4. Sorting by normal.") }
         
         // ------
         // Step 5: Combine similar colors for each shade together.
@@ -108,7 +147,7 @@ extension DominantColors {
             }
             return dominantColors
         }
-        if log { Self.log(from: &processTime, label: "Step 5. Combine similar colors by shade.") }
+        if islogging { Self.log(from: &processTime, label: "Step 5. Combine similar colors by shade.") }
         
         // ------
         // Step 6: Let's combine the colors from all the shades together and combine them with each other for now.
@@ -123,7 +162,7 @@ extension DominantColors {
                 .sorted(by: { $0.normal > $1.normal })
             deltaColorsIncrement += 1
         }
-        if log { Self.log(from: &processTime, label: "Step 6. Combine similar colors.") }
+        if islogging { Self.log(from: &processTime, label: "Step 6. Combine similar colors.") }
         // Add color if the combination results in few colors
 //        let countForAdd = maxCount - dominantColors.count
 //        if countForAdd > 0 {
@@ -148,7 +187,7 @@ extension DominantColors {
                 lhs.frequency > rhs.frequency
             })
         }
-        if log { Self.log(from: &processTime, label: "Step 7. Final sorting.") }
+        if islogging { Self.log(from: &processTime, label: "Step 7. Final sorting.") }
         
         // ------
         // Step 8: Calculate the frequency of colors as a percentage.
@@ -164,7 +203,7 @@ extension DominantColors {
             
             return ColorFrequency(color: colorFrequency.color, count: percentage)
         })
-        if log { Self.log(from: &processTime, label: "Step 8. Calculate the frequency of colors as a percentage.") }
+        if islogging { Self.log(from: &processTime, label: "Step 8. Calculate the frequency of colors as a percentage.") }
         
         // ------
         // Final: Calculate the frequency of colors as a percentage.

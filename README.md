@@ -28,20 +28,15 @@ let cgColors = try? DominantColors.dominantColors(image: cgImage, maxCount: 6)
 
 Get colors by selecting algorithm. Extract colors by specifying the [color difference formula](https://en.wikipedia.org/wiki/Color_difference):
 ```swift
-let cgColors = try? DominantColors.dominantColors(image: cgImage, algorithm: .iterative(formula: .CIE76))
+let cgColors = try? DominantColors.dominantColors(image: cgImage, algorithm: .CIE76)
 ```
 If you need more accurate results, then there is maximum quality (the default is `fair`):
 ```swift
-let cgColors = try? DominantColors.dominantColors(
-                    image: cgImage,
-                    quality: .best,
-                    algorithm: .iterative(formula: .CIE76))
+let cgColors = try? DominantColors.dominantColors(image: cgImage, quality: .best, algorithm: .CIE76)
 ```
 To quickly extract colors, use:
 ```swift
-let cgColors = try? DominantColors.dominantColors(
-                    image: cgImage,
-                    quality: .fair)
+let cgColors = try? DominantColors.dominantColors(image: cgImage, quality: .fair)
 ```
 In this case, a pixelization algorithm is used for the original image.
 
@@ -58,20 +53,20 @@ The default is `frequency`, which sorts colors in descending order of their numb
 
 Get the average color by dividing the image into segments horizontally:
 ```swift
-let cgColors = try? DominantColors.dominantColors(image: cgImage, algorithm: .areaAverage(count: 8))
+let cgColors = try? DominantColors.averageColors(image: cgImage, count: 8)
 ```
 
 Finds the dominant colors of an image by using a k-means clustering algorithm:
 ```swift
-let cgColors = try? DominantColors.dominantColors(image: cgImage, algorithm: .kMeansClustering)
+let cgColors = try? DominantColors.kMeansClusteringColors(image: cgImage, count: 8)
 ```
 
 ## Example
 - macOS
-Use the macOS example [macOSImageColors](https://github.com/DenDmitriev/DominantColors/tree/main/Example/macOSImageColors) project included in this repository to find examples of various DominantColors features.
+PreviewMacOS.swift
 
 - iOS
-Use the iOS example [iOSDemoDominationColor](https://github.com/DenDmitriev/DominantColors/tree/main/Example/iOSDemoDominationColor) for acquaintance.
+PreviewiOS.swift
 
 ## Installation
 

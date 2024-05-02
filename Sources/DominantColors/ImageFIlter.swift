@@ -6,7 +6,11 @@
 //
 
 import CoreImage
-import AppKit.NSImage
+#if os(OSX)
+    import AppKit.NSImage
+#elseif os(iOS)
+import UIKit.UIImage
+#endif
 
 class ImageFilter {
     /// Resize the image based on the requested quality
@@ -68,12 +72,38 @@ class ImageFilter {
         else { throw ImageColorError.ciFilterCreateFailure(filter: filterName) }
         
         // For remove alpa after crop from CFData image
-        let context = CIContext()
-        guard let dataCroppedImage = context.pngRepresentation(of: CIImage(cgImage: croppedImage), format: .RGBA8, colorSpace: croppedImage.colorSpace!),
-              let nsImageCroppedImage = NSImage(data: dataCroppedImage),
-              let outputCGImage = nsImageCroppedImage.cgImage(forProposedRect: nil, context: nil, hints: nil)
-        else { throw ImageColorError.ciFilterCreateFailure(filter: filterName) }
+        let outputCGImage = try imageRepresentation(cgImage: croppedImage)
         
         return outputCGImage
     }
 }
+
+
+#if os(OSX)
+extension ImageFilter {
+    // Representation CFData image
+    private static func imageRepresentation(cgImage: CGImage) throws -> CGImage {
+        let context = CIContext()
+        guard let dataCroppedImage = context.pngRepresentation(of: CIImage(cgImage: cgImage), format: .RGBA8, colorSpace: cgImage.colorSpace!),
+              let nsImageCroppedImage = NSImage(data: dataCroppedImage),
+              let outputCGImage = nsImageCroppedImage.cgImage(forProposedRect: nil, context: nil, hints: nil)
+        else { throw ImageColorError.ciFilterCreateFailure(filter: #function) }
+        
+        return outputCGImage
+    }
+}
+#elseif os(iOS)
+extension ImageFilter {
+    // Representation CFData image
+    private static func imageRepresentation(cgImage: CGImage) throws -> CGImage {
+        let context = CIContext()
+        guard let dataCroppedImage = context.pngRepresentation(of: CIImage(cgImage: cgImage), format: .RGBA8, colorSpace: cgImage.colorSpace!),
+              let uiImageCroppedImage = UIImage(data: dataCroppedImage),
+              let outputCGImage = uiImageCroppedImage.cgImage
+        else { throw ImageColorError.ciFilterCreateFailure(filter: #function) }
+        
+        return outputCGImage
+    }
+}
+#endif
+

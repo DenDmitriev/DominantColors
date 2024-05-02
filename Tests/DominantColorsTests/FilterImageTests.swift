@@ -8,6 +8,7 @@
 import XCTest
 @testable import DominantColors
 
+#if os(OSX)
 final class FilterImageTests: XCTestCase {
 
     func testPixellate() throws {
@@ -57,3 +58,4 @@ final class FilterImageTests: XCTestCase {
         XCTAssert(alphaColors.isEmpty)
     }
 }
+#endif

@@ -9,6 +9,7 @@
 import XCTest
 @testable import DominantColors
 
+#if os(OSX)
 class DominantColorsTests: XCTestCase {
     
     func testGreenImage() throws {
@@ -131,3 +132,4 @@ class DominantColorsTests: XCTestCase {
     }
     
 }
+#endif

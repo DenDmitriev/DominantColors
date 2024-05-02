@@ -1,10 +1,10 @@
 //
-//  Preview.swift
+//  PreviewMacOS.swift
 //
 //
 //  Created by Denis Dmitriev on 21.04.2024.
 //
-
+#if os(OSX)
 import SwiftUI
 
 @available(macOS 14.0, *)
@@ -220,3 +220,4 @@ struct Preview: View {
     Preview()
         .frame(width: 600)
 }
+#endif

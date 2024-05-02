@@ -8,6 +8,7 @@
 import XCTest
 @testable import DominantColors
 
+#if os(OSX)
 final class ExtractColorsTests: XCTestCase {
 
     func testExtractColors() throws {
@@ -38,3 +39,4 @@ final class ExtractColorsTests: XCTestCase {
         XCTAssertEqual(colors.count(for: RGB255(red: 155, green: 81, blue: 224)), 1)
     }
 }
+#endif

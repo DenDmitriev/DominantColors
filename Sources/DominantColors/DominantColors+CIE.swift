@@ -383,7 +383,7 @@ extension DominantColors {
     /// - delta: Maximum black delta difference.
     @discardableResult
     static func removeBlack(delta: CGFloat, colors: inout [ColorFrequency], using formula: DeltaEFormula = .CIE76) -> [ColorFrequency] {
-        let black = CGColor.black
+        let black = CGColor(srgbRed: 0, green: 0, blue: 0, alpha: 1.0)
         var removedColors = [ColorFrequency]()
         colors.removeAll { color in
             let difference = black.difference(from: color.color, using: formula)
@@ -406,7 +406,7 @@ extension DominantColors {
     /// - delta: Maximum white delta difference.
     @discardableResult
     static func removeWhite(delta: CGFloat, colors: inout [ColorFrequency], using formula: DeltaEFormula = .CIE76) -> [ColorFrequency] {
-        let white = CGColor.white
+        let white = CGColor(srgbRed: 1, green: 1, blue: 1, alpha: 1.0)
         var removedColors = [ColorFrequency]()
         colors.removeAll { color in
             let difference = white.difference(from: color.color, using: formula)
@@ -426,7 +426,8 @@ extension DominantColors {
         guard dominantColors.count < count else { return }
         var count = count
         while count > 0 {
-            var colorBeat = ColorFrequency(color: CGColor.black, count: 0)
+            let black = CGColor(srgbRed: 0, green: 0, blue: 0, alpha: 1.0)
+            var colorBeat = ColorFrequency(color: black, count: 0)
             for (_, colorFrequencies) in dominantColorsByShade {
             colorFrequenciesLoop: for colorFrequency in colorFrequencies.sorted(by: { $0.normal > $1.normal }) {
                 guard colorBeat.normal < colorFrequency.normal,

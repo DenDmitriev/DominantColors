@@ -10,6 +10,7 @@ import XCTest
 @testable import DominantColors
 
 /// http://www.brucelindbloom.com/index.html?Eqn_XYZ_to_Lab.html
+#if os(OSX)
 class ComparisonTests: XCTestCase {
     
     // MARK: - Euclidean
@@ -182,6 +183,5 @@ class ComparisonTests: XCTestCase {
         let reversedDifference = color2.difference(from: color1, using: .CIE94).associatedValue
         XCTAssertEqual(reversedDifference, 9.607)
     }
-
-
 }
+#endif

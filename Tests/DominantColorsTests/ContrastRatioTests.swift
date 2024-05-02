@@ -12,15 +12,15 @@ import XCTest
 class ContrastRatioTests: XCTestCase {
 
     func testBlackWhite() {
-        let color = CGColor.white
-        let backgroundColor = CGColor.black
+        let color = CGColor(srgbRed: 1, green: 1, blue: 1, alpha: 1)
+        let backgroundColor = CGColor(srgbRed: 0, green: 0, blue: 0, alpha: 1)
         let contrastRatioResult = color.contrastRatio(with: backgroundColor)
         XCTAssertEqual(contrastRatioResult.associatedValue, 21.0)
     }
     
     func testWhiteBlack() {
-        let color = CGColor.black
-        let backgroundColor = CGColor.white
+        let color = CGColor(srgbRed: 0, green: 0, blue: 0, alpha: 1)
+        let backgroundColor = CGColor(srgbRed: 1, green: 1, blue: 1, alpha: 1)
         let contrastRatioResult = color.contrastRatio(with: backgroundColor)
         XCTAssertEqual(contrastRatioResult.associatedValue, 21.0)
     }

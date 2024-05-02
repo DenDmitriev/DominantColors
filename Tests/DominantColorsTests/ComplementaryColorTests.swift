@@ -12,13 +12,13 @@ import XCTest
 class ComplementaryColorTests: XCTestCase {
 
     func testBlack() {
-        let black = CGColor.black
+        let black = CGColor(srgbRed: 0, green: 0, blue: 0, alpha: 1)
         let complementaryColor = black.complementaryColor
         XCTAssertEqual(complementaryColor.components, CGColor(red: 1, green: 1, blue: 1, alpha: 1.0).components)
     }
     
     func testWhite() {
-        let white = CGColor.white
+        let white = CGColor(srgbRed: 1, green: 1, blue: 1, alpha: 1)
         let complementaryColor = white.complementaryColor
         XCTAssertEqual(complementaryColor.components, CGColor(red: 0, green: 0, blue: 0, alpha: 1.0).components)
     }

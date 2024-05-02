@@ -8,6 +8,7 @@
 import XCTest
 @testable import DominantColors
 
+#if os(OSX)
 final class ColorShadeTests: XCTestCase {
 
     func testRedShades() throws {
@@ -187,3 +188,4 @@ final class ColorShadeTests: XCTestCase {
     }
 
 }
+#endif

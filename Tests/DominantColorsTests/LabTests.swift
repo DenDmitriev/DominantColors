@@ -36,7 +36,7 @@ class LabTests: XCTestCase {
     }
     
     func testWhite() {
-        let color = CGColor.white
+        let color = CGColor(srgbRed: 1, green: 1, blue: 1, alpha: 1)
         
         XCTAssertEqual(color.L, 100)
         XCTAssertEqual(color.a, 0)
@@ -44,7 +44,7 @@ class LabTests: XCTestCase {
     }
     
     func testBlack() {
-        let color = CGColor.black
+        let color = CGColor(srgbRed: 0, green: 0, blue: 0, alpha: 1)
         
         XCTAssertEqual(color.L, 0)
         XCTAssertEqual(color.a, 0)

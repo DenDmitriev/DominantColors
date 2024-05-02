@@ -62,13 +62,13 @@ class HexTests: XCTestCase {
     // hex
     
     func testHexBlack() {
-        let color = CGColor.black
+        let color = CGColor(srgbRed: 0, green: 0, blue: 0, alpha: 1)
         let hex = Hex(cgColor: color)
         XCTAssertEqual(hex.hex, blackHex)
     }
     
     func testHexWhite() {
-        let color = CGColor.white
+        let color = CGColor(srgbRed: 1, green: 1, blue: 1, alpha: 1)
         let hex = Hex(cgColor: color)
         XCTAssertEqual(hex.hex, whiteHex)
     }

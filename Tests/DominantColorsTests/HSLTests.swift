@@ -45,7 +45,7 @@ class HSLTests: XCTestCase {
     }
     
     func testBlack() {
-        let color = CGColor.black
+        let color = CGColor(srgbRed: 0, green: 0, blue: 0, alpha: 1.0)
         
         XCTAssertEqual(color.hue, 0)
         XCTAssertEqual(color.saturation, 0)

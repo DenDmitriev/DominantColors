@@ -19,25 +19,28 @@ extension DominantColors {
     /// - Returns: Cluster average colors as an array of `CGColor` instances.
     public static func kMeansClusteringColors(
         image: CGImage,
+        quality: DominantColorQuality,
         count: Int = 8,
         sorting: Sort = .frequency
     ) throws -> [CGColor] {
-        let dominantColors = try areaAverageColors(image: image, count: UInt8(count), sorting: sorting)
+        let dominantColors = try kMeansClustering(image: image, with: quality, count: count, sorting: sorting)
         return dominantColors
     }
     
     static func kMeansClustering(
         image: CGImage,
         with quality: DominantColorQuality,
+        count: Int,
         sorting: Sort = .frequency
     ) throws -> [CGColor] {
+        guard count > 0 else { return [] }
         let ciImage = CIImage(cgImage: image)
         let filter = "CIKMeans"
         guard let kMeansFilter = CIFilter(name: filter) else {
             throw ImageColorError.ciFilterCreateFailure(filter: filter)
         }
         
-        let clusterCount = 8
+        let clusterCount = count
 
         kMeansFilter.setValue(ciImage, forKey: kCIInputImageKey)
         kMeansFilter.setValue(CIVector(cgRect: ciImage.extent), forKey: "inputExtent")

@@ -62,11 +62,13 @@ let cgColors = try? DominantColors.kMeansClusteringColors(image: cgImage, count:
 ```
 
 ## Example
-- macOS
-PreviewMacOS.swift
+### macOS
+- [PreviewMacOS](Sources/DominantColors/Preview/PreviewMacOS.swift) in package,
+- App [MacOSPreview](https://github.com/DenDmitriev/DominantColors/tree/main/Example/MacOSPreview) in example folder.
 
-- iOS
-PreviewiOS.swift
+### iOS
+- [PreviewiOS](Sources/DominantColors/Preview/PreviewiOS.swift) in package,
+- App [iOSDominantColorsPreview](https://github.com/DenDmitriev/DominantColors/tree/main/Example/iOSDominantColorsPreview) in example folder.
 
 ## Installation
 

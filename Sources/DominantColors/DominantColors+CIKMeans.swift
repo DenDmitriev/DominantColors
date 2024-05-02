@@ -19,7 +19,7 @@ extension DominantColors {
     /// - Returns: Cluster average colors as an array of `CGColor` instances.
     public static func kMeansClusteringColors(
         image: CGImage,
-        quality: DominantColorQuality,
+        quality: DominantColorQuality = .fair,
         count: Int = 8,
         sorting: Sort = .frequency
     ) throws -> [CGColor] {

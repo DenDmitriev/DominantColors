@@ -58,7 +58,7 @@ let cgColors = try? DominantColors.averageColors(image: cgImage, count: 8)
 
 Finds the dominant colors of an image by using a k-means clustering algorithm:
 ```swift
-let cgColors = try? DominantColors.kMeansClusteringColors(image: cgImage, count: 8)
+let cgColors = try? DominantColors.kMeansClusteringColors(image: cgImage, quality: .fair, count: 10)
 ```
 
 ## Example

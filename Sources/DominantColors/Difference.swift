@@ -73,23 +73,23 @@ extension CGColor {
         switch formula {
         case .euclidean:
             let differenceValue = sqrt(pow(self.red255 - color.red255, 2) + pow(self.green255 - color.green255, 2) + pow(self.blue255 - color.blue255, 2))
-            let roundedDifferenceValue = differenceValue.rounded(.toNearestOrEven, precision: 100)
+            let roundedDifferenceValue = differenceValue.rounded(.toNearestOrAwayFromZero, precision: 1000)
             return ColorDifferenceResult(value: roundedDifferenceValue)
         case .CIE76:
             let differenceValue = sqrt(pow(color.L - self.L, 2) + pow(color.a - self.a, 2) + pow(color.b - self.b, 2))
-            let roundedDifferenceValue = differenceValue.rounded(.toNearestOrEven, precision: 100)
+            let roundedDifferenceValue = differenceValue.rounded(.toNearestOrAwayFromZero, precision: 1000)
             return ColorDifferenceResult(value: roundedDifferenceValue)
         case .CIE94:
             let differenceValue = CGColor.deltaECIE94(lhs: self, rhs: color)
-            let roundedDifferenceValue = differenceValue.rounded(.toNearestOrEven, precision: 100)
+            let roundedDifferenceValue = differenceValue.rounded(.toNearestOrAwayFromZero, precision: 1000)
             return ColorDifferenceResult(value: roundedDifferenceValue)
         case .CIEDE2000:
             let differenceValue = CGColor.deltaCIEDE2000(lhs: self, rhs: color)
-            let roundedDifferenceValue = differenceValue.rounded(.toNearestOrEven, precision: 100)
+            let roundedDifferenceValue = differenceValue.rounded(.toNearestOrAwayFromZero, precision: 1000)
             return ColorDifferenceResult(value: roundedDifferenceValue)
         case .CMC:
             let differenceValue = CGColor.deltaCMC(lhs: self, rhs: color)
-            let roundedDifferenceValue = differenceValue.rounded(.toNearestOrEven, precision: 100)
+            let roundedDifferenceValue = differenceValue.rounded(.toNearestOrAwayFromZero, precision: 1000)
             return ColorDifferenceResult(value: roundedDifferenceValue)
         }
     }

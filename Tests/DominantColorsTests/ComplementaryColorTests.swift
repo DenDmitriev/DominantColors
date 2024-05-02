@@ -12,33 +12,33 @@ import XCTest
 class ComplementaryColorTests: XCTestCase {
 
     func testBlack() {
-        let black = CGColor.black
+        let black = CGColor(srgbRed: 0, green: 0, blue: 0, alpha: 1)
         let complementaryColor = black.complementaryColor
-        XCTAssertEqual(complementaryColor, CGColor(red: 1, green: 1, blue: 1, alpha: 1.0))
+        XCTAssertEqual(complementaryColor.components, CGColor(red: 1, green: 1, blue: 1, alpha: 1.0).components)
     }
     
     func testWhite() {
-        let white = CGColor.white
+        let white = CGColor(srgbRed: 1, green: 1, blue: 1, alpha: 1)
         let complementaryColor = white.complementaryColor
-        XCTAssertEqual(complementaryColor, CGColor(red: 0, green: 0, blue: 0, alpha: 1.0))
+        XCTAssertEqual(complementaryColor.components, CGColor(red: 0, green: 0, blue: 0, alpha: 1.0).components)
     }
     
     func testBlue() {
         let blue = CGColor(red: .zero, green: .zero, blue: 1, alpha: 1.0)
         let complementaryColor = blue.complementaryColor
-        XCTAssertEqual(complementaryColor, CGColor(red: 255.0 / 255.0, green: 255.0 / 255.0, blue: 0, alpha: 1.0))
+        XCTAssertEqual(complementaryColor.components, CGColor(red: 255.0 / 255.0, green: 255.0 / 255.0, blue: 0, alpha: 1.0).components)
     }
     
     func testYellow() {
         let yellow = CGColor(red: 255.0 / 255.0, green: 255.0 / 255.0, blue: 0, alpha: 1.0)
         let complementaryColor = yellow.complementaryColor
-        XCTAssertEqual(complementaryColor, CGColor(red: .zero, green: .zero, blue: 255, alpha: 1.0))
+        XCTAssertEqual(complementaryColor.components, CGColor(red: .zero, green: .zero, blue: 255, alpha: 1.0).components)
     }
     
     func testRed() {
         let red = CGColor(red: 1, green: .zero, blue: .zero, alpha: 1.0)
         let complementaryColor = red.complementaryColor
-        XCTAssertEqual(complementaryColor, CGColor(red: 0.0 / 255.0, green: 255.0 / 255.0, blue: 255.0 / 255.0, alpha: 1.0))
+        XCTAssertEqual(complementaryColor.components, CGColor(red: 0.0 / 255.0, green: 255.0 / 255.0, blue: 255.0 / 255.0, alpha: 1.0).components)
     }
         
 }

@@ -27,7 +27,7 @@ extension CGColor {
         
         let relativeLuminance = 0.2126 * linearR + 0.7152 * linearG + 0.0722 * linearB
         
-        return relativeLuminance.rounded(.toNearestOrEven, precision: 1000)
+        return relativeLuminance.rounded(.toNearestOrAwayFromZero, precision: 1000)
     }
     
 }

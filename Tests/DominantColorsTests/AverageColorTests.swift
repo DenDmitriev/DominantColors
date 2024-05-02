@@ -9,6 +9,7 @@
 import XCTest
 @testable import DominantColors
 
+#if os(OSX)
 class AverageColorTests: XCTestCase {
 
     static let tolerance: CGFloat = 0.5
@@ -52,3 +53,4 @@ class AverageColorTests: XCTestCase {
     }
     
 }
+#endif

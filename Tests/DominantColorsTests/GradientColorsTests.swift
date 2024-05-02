@@ -106,7 +106,6 @@ final class GradientColorsTests: XCTestCase {
             .init(red: 0, green: 0, blue: 1, alpha: 1)
         ]
         
-        let size = 5
         let gradientColors = colors.gradientColors(in: 5)
         
         let gradientColorsExpectation: [CGColor] = [

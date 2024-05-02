@@ -52,7 +52,7 @@ extension CGColor {
         let l2 = min(color.relativeLuminance, relativeLuminance)
 
         let contrastRatio = (l1 + 0.05) / (l2 + 0.05)
-        return ContrastRatioResult(value: contrastRatio.rounded(.toNearestOrEven, precision: 100))
+        return ContrastRatioResult(value: contrastRatio.rounded(.toNearestOrAwayFromZero, precision: 100))
     }
     
 }

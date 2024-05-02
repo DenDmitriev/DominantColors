@@ -9,7 +9,7 @@ import CoreGraphics
 
 extension CGFloat {
     
-    func rounded(_ rule: FloatingPointRoundingRule, precision: Int) -> CGFloat {
+    func rounded(_ rule: FloatingPointRoundingRule = .toNearestOrAwayFromZero, precision: Int) -> CGFloat {
         return (self * CGFloat(precision)).rounded(rule) / CGFloat(precision)
     }
     

@@ -10,7 +10,7 @@ import Foundation
 /// Reoresents how precise the dominant color algorithm should be.
 /// The lower the quality, the faster the algorithm.
 /// `.best` should only be reserved for very small images.
-public enum DominantColorQuality {
+public enum DominantColorQuality: String, Codable {
     case low
     case fair
     case high

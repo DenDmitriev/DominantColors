@@ -10,7 +10,7 @@ import SwiftUI
 @available(macOS 14.0, *)
 struct Preview: View {
     
-    private static let images = ["LittleMissSunshine", "bladerunner056", "TheLifeAquaticWithSteveZissou", "ComeTogether", "Reader"]
+    private static let images = ["LittleMissSunshine", "bladerunner056", "TheLifeAquaticWithSteveZissou", "ComeTogether"]
     @State private var selection: String = Self.images.first ?? ""
     @State private var nsImage: NSImage?
     @State private var cgImage: CGImage?
@@ -61,6 +61,22 @@ struct Preview: View {
                     }
                     .frame(maxWidth: .infinity)
                     .frame(height: 200)
+                    .gesture(DragGesture()
+                        .onEnded({ value in
+                            let deltaX = value.startLocation.x - value.location.x
+                            guard let currentIndex = Self.images.firstIndex(of: selection) else { return }
+                            if deltaX > 100 {
+                                if currentIndex < Self.images.count - 1 {
+                                    let nextIndex = Self.images.index(after: currentIndex)
+                                    selection = Self.images[nextIndex]
+                                }
+                            } else if deltaX < 100 {
+                                if currentIndex > 0 {
+                                    let beforeIndex = Self.images.index(before: currentIndex)
+                                    selection = Self.images[beforeIndex]
+                                }
+                            }
+                        }))
                     .onChange(of: selection) { newSelection in
                         loadImage(newSelection)
                     }
@@ -209,8 +225,7 @@ struct Preview: View {
                     maxCount: countColors,
                     options: flags,
                     sorting: sorting,
-                    deltaColors: CGFloat(deltaColor),
-                    time: false
+                    deltaColors: CGFloat(deltaColor)
                 )
                 DispatchQueue.main.async {
                     self.colors = cgColors.map({ Color(cgColor: $0) })

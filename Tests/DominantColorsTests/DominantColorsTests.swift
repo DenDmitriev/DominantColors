@@ -130,6 +130,5 @@ class DominantColorsTests: XCTestCase {
             previousCount = colorFrequency.frequency
         }
     }
-    
 }
 #endif

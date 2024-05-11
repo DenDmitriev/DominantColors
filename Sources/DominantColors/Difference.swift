@@ -331,8 +331,6 @@ extension CGColor {
         let p2 = pow((dC / (c * sC)), 2)
         let p3 = pow((dH / sH), 2)
         
-        print(p1, p2, p3)
-
         let deltaE = sqrt(p1 + p2 + p3)
         
         return deltaE

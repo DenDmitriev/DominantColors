@@ -22,8 +22,8 @@ extension DominantColors {
         count: Int = 8,
         sorting: Sort = .frequency
     ) throws -> [CGColor] {
-        let dominantColors = try areaAverageColors(image: image, count: UInt8(count), sorting: sorting)
-        return dominantColors
+        let averageColors = try areaAverageColors(image: image, count: UInt8(count), sorting: sorting)
+        return averageColors
     }
     
     static func areaAverageColors(

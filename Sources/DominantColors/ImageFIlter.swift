@@ -7,7 +7,7 @@
 
 import CoreImage
 #if os(OSX)
-    import AppKit.NSImage
+import AppKit.NSImage
 #elseif os(iOS)
 import UIKit.UIImage
 #endif
@@ -44,37 +44,11 @@ class ImageFilter {
         return outputCGImage
     }
     
-    static func cropAlpha(image: CGImage, by quality: DominantColorQuality = .fair) throws -> CGImage {
-        guard let cfData = image.dataProvider?.data,
-              let data = CFDataGetBytePtr(cfData)
+    static func cropAlpha(image: CGImage) throws -> CGImage {
+        guard let imageTrimmed = image.trimmingTransparentPixels(maximumAlphaChannel: 150)
         else { throw ImageColorError.cgImageDataFailure }
         
-        let pixelSize = quality.pixellateScale.intValue
-        let width = CGFloat((image.width / pixelSize - 1) * pixelSize)
-        let height = CGFloat((image.height / pixelSize - 1) * pixelSize)
-        
-        var rect = CGRectMake(0, 0, width, height)
-        
-        outerLoop: for yCoordonate in 0 ..< image.height {
-            for xCoordonate in 0 ..< image.width {
-                let index = (image.width * yCoordonate + xCoordonate) * 4
-                let alpha = data[index + 3]
-                if alpha != 0 {
-                    rect.origin.x = CGFloat(xCoordonate)
-                    rect.origin.y = CGFloat(yCoordonate)
-                    break outerLoop
-                }
-            }
-        }
-        
-        let filterName = "CICrop"
-        guard let croppedImage = image.cropping(to: rect)
-        else { throw ImageColorError.ciFilterCreateFailure(filter: filterName) }
-        
-        // For remove alpa after crop from CFData image
-        let outputCGImage = try imageRepresentation(cgImage: croppedImage)
-        
-        return outputCGImage
+        return imageTrimmed
     }
 }
 

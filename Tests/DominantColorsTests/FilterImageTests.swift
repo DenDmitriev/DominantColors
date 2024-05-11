@@ -29,7 +29,7 @@ final class FilterImageTests: XCTestCase {
         let nsImage = Bundle.module.image(forResource: name)
         let cgImage = nsImage!.cgImage(forProposedRect: nil, context: nil, hints: nil)!
         
-        let croppedImage = try ImageFilter.cropAlpha(image: cgImage, by: .fair)
+        let croppedImage = try ImageFilter.cropAlpha(image: cgImage)
         
         let size = CGSize(width: croppedImage.width, height: croppedImage.height)
         let expectationSize = CGSize(width: 32, height: 32)

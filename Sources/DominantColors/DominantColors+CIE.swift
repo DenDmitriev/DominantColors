@@ -79,10 +79,15 @@ extension DominantColors {
         case .low:
             image = ImageFilter.resizeFilter(image: image, by: quality)
             image = try ImageFilter.pixellate(image: image, by: .best)
-            image = try ImageFilter.cropAlpha(image: image, by: .best)
-        case .fair, .high:
-            image = try ImageFilter.pixellate(image: image, by: quality)
-            image = try ImageFilter.cropAlpha(image: image, by: quality)
+            image = try ImageFilter.cropAlpha(image: image)
+        case .fair:
+            image = ImageFilter.resizeFilter(image: image, by: quality)
+            image = try ImageFilter.pixellate(image: image, by: .best)
+            image = try ImageFilter.cropAlpha(image: image)
+        case .high:
+            image = ImageFilter.resizeFilter(image: image, by: quality)
+            image = try ImageFilter.pixellate(image: image, by: .best)
+            image = try ImageFilter.cropAlpha(image: image)
         case .best:
             break
         }
@@ -96,8 +101,11 @@ extension DominantColors {
         case .low:
             let pixelSize = DominantColorQuality.best.pixellateScale.intValue
             colorsCountedSet = try extractColors(pixellate: image, pixelSize: pixelSize)
-        case .fair, .high:
-            let pixelSize = quality.pixellateScale.intValue
+        case .fair:
+            let pixelSize = DominantColorQuality.best.pixellateScale.intValue
+            colorsCountedSet = try extractColors(pixellate: image, pixelSize: pixelSize)
+        case .high:
+            let pixelSize = DominantColorQuality.best.pixellateScale.intValue
             colorsCountedSet = try extractColors(pixellate: image, pixelSize: pixelSize)
         case .best:
             colorsCountedSet = try extractColors(image)
@@ -366,7 +374,8 @@ extension DominantColors {
         let colorsOnImage = NSCountedSet(capacity: Int(image.resolution.area))
         for yCoordonate in 0 ..< image.height / pixelSize {
             for xCoordonate in 0 ..< image.width / pixelSize {
-                let index = (image.width * yCoordonate + xCoordonate) * pixelSize * 4
+                let inset = pixelSize / 2
+                let index = (image.width * yCoordonate + xCoordonate + inset) * pixelSize * 4
                 
                 // Let's make sure there is enough alpha 150 / 250 = 60%.
                 let alpha = data[index + 3]

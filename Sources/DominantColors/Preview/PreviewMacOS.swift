@@ -209,8 +209,6 @@ struct Preview: View {
         
         colors.removeAll()
         
-        guard let cgImage = nsImage.cgImage(forProposedRect: nil, context: nil, hints: nil) else { return }
-        
         var flags = [DominantColors.Options]()
         if pureBlack { flags.append(.excludeBlack) }
         if pureWhite { flags.append(.excludeWhite) }
@@ -218,8 +216,8 @@ struct Preview: View {
         
         DispatchQueue.global(qos: .userInitiated).async {
             do {
-                let cgColors = try DominantColors.dominantColors(
-                    image: cgImage,
+                let nsColors = try DominantColors.dominantColors(
+                    nsImage: nsImage,
                     quality: .fair,
                     algorithm: algorithm,
                     maxCount: countColors,
@@ -228,7 +226,7 @@ struct Preview: View {
                     deltaColors: CGFloat(deltaColor)
                 )
                 DispatchQueue.main.async {
-                    self.colors = cgColors.map({ Color(cgColor: $0) })
+                    self.colors = nsColors.map({ Color(nsColor: $0) })
                 }
             } catch {
                 print(error.localizedDescription)

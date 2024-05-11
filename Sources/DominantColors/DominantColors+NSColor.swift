@@ -40,7 +40,7 @@ extension DominantColors {
         timeLog: Bool = false
     ) throws -> [NSColor] {
         let cgImage = try cgImage(from: nsImage)
-        let dominantColorFrequencies = try dominantColorFrequencies(
+        let colorFrequencies = try dominantColorFrequencies(
             image: cgImage,
                     quality: quality,
             formula: algorithm,
@@ -51,7 +51,7 @@ extension DominantColors {
             resultLog: resultLog,
             timeLog: timeLog
         )
-        let dominantColors = dominantColorFrequencies.compactMap { NSColor(cgColor: $0.color) }
+        let dominantColors = colorFrequencies.compactMap { NSColor(cgColor: $0.color) }
         return dominantColors
     }
     

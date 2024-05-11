@@ -5,11 +5,19 @@
 //  Created by Boris Emorine on 5/30/20.
 //  Copyright © 2020 BorisEmorine. All rights reserved.
 //
-
+#if os(OSX)
 import XCTest
 @testable import DominantColors
 
 class DominantColorQualityTests: XCTestCase {
+    
+//    func testImageFilter() throws {
+//        let name = NSImage.Name("LittleMissSunshine")
+//        let nsImage = Bundle.module.image(forResource: name)
+//        let cgImage = nsImage!.cgImage(forProposedRect: nil, context: nil, hints: nil)!
+//        
+//        let colors = try DominantColors.dominantColors(image: cgImage, quality: .high)
+//    }
     
     /// It should return the exact same size (original size) if the quality is set to best.
     func testBestQuality() {
@@ -30,3 +38,4 @@ class DominantColorQualityTests: XCTestCase {
     }
     
 }
+#endif

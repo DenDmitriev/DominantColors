@@ -38,9 +38,9 @@ extension DominantColors {
         resultLog: Bool = false,
         timeLog: Bool = false
     ) throws -> [Color.Resolved] {
-        let dominantColorFrequencies = try dominantColorFrequencies(
+        let colorFrequencies = try Self.dominantColorFrequencies(
             image: image,
-                    quality: quality,
+            quality: quality,
             formula: algorithm,
             maxCount: maxCount,
             options: options,
@@ -49,7 +49,7 @@ extension DominantColors {
             resultLog: resultLog,
             timeLog: timeLog
         )
-        let dominantColors = dominantColorFrequencies.map { cgColor2Resolved(cgColor: $0.color)}
+        let dominantColors = colorFrequencies.map { cgColor2Resolved(cgColor: $0.color)}
         return dominantColors
     }
     
@@ -85,9 +85,9 @@ extension DominantColors {
         count: Int = 8,
         sorting: Sort = .frequency
     ) throws -> [Color.Resolved] {
-        let kMeansClusteringColors = try kMeansClustering(image: image, with: quality, count: count, sorting: sorting)
+        let clusteringColors = try kMeansClustering(image: image, with: quality, count: count, sorting: sorting)
             .map { cgColor2Resolved(cgColor: $0)}
-        return kMeansClusteringColors
+        return clusteringColors
     }
     
     private static func cgColor2Resolved(cgColor: CGColor) -> Color.Resolved {

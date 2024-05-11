@@ -26,17 +26,18 @@ final class ExtractColorsTests: XCTestCase {
     }
     
     func testExtractColorsFromPixellateImage() throws {
-        let name = NSImage.Name("Pixeleate_Image")
+        let name = NSImage.Name("Pixeleate_Image") // pixel size 32
         let nsImage = Bundle.module.image(forResource: name)
         let cgImage = nsImage!.cgImage(forProposedRect: nil, context: nil, hints: nil)!
         
-        let colors = try DominantColors.extractColors(pixellate: cgImage, pixelSize: 32)
+        let colorsCountedSet = try DominantColors.extractColors(pixellate: cgImage, pixelSize: 32)
         
-        XCTAssertEqual(colors.count, 4)
-        XCTAssertEqual(colors.count(for: RGB255(red: 235, green: 87, blue: 87)), 1)
-        XCTAssertEqual(colors.count(for: RGB255(red: 47, green: 128, blue: 237)), 1)
-        XCTAssertEqual(colors.count(for: RGB255(red: 33, green: 150, blue: 83)), 1)
-        XCTAssertEqual(colors.count(for: RGB255(red: 155, green: 81, blue: 224)), 1)
+        XCTAssertEqual(colorsCountedSet.count, 4)
+        
+        XCTAssertEqual(colorsCountedSet.count(for: RGB255(red: 235, green: 87, blue: 87)), 1)
+        XCTAssertEqual(colorsCountedSet.count(for: RGB255(red: 47, green: 128, blue: 237)), 1)
+        XCTAssertEqual(colorsCountedSet.count(for: RGB255(red: 33, green: 150, blue: 83)), 1)
+        XCTAssertEqual(colorsCountedSet.count(for: RGB255(red: 155, green: 81, blue: 224)), 1)
     }
 }
 #endif

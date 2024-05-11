@@ -172,7 +172,6 @@ struct Preview: View {
         if pureBlack { flags.append(.excludeBlack) }
         if pureWhite { flags.append(.excludeWhite) }
         if pureGray { flags.append(.excludeGray) }
-        
         DispatchQueue.global(qos: .userInitiated).async {
             do {
                 let cgColors = try DominantColors.dominantColors(
@@ -182,8 +181,7 @@ struct Preview: View {
                     maxCount: countColors,
                     options: flags,
                     sorting: sorting,
-                    deltaColors: CGFloat(deltaColor),
-                    time: false
+                    deltaColors: CGFloat(deltaColor)
                 )
                 DispatchQueue.main.async {
                     self.colors = cgColors.map({ Color(UIColor(cgColor: $0)) })

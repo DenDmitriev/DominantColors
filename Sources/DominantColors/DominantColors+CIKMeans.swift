@@ -23,8 +23,8 @@ extension DominantColors {
         count: Int = 8,
         sorting: Sort = .frequency
     ) throws -> [CGColor] {
-        let dominantColors = try kMeansClustering(image: image, with: quality, count: count, sorting: sorting)
-        return dominantColors
+        let kMeansClusteringColors = try kMeansClustering(image: image, with: quality, count: count, sorting: sorting)
+        return kMeansClusteringColors
     }
     
     static func kMeansClustering(

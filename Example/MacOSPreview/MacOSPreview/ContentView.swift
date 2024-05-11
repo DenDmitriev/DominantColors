@@ -12,11 +12,9 @@ struct ContentView: View {
     private static let images = ["LittleMissSunshine", "BladeRunner2049", "NeonDemon"]
     @State private var selection: String = Self.images.first ?? ""
     @State private var nsImage: NSImage?
-    @State private var cgImage: CGImage?
-    @State private var cgImageSize: NSSize = .zero
     @State private var colors = [Color]()
     @State private var sorting: DominantColors.Sort = .frequency
-    @State private var method: DeltaEFormula = .CIE76
+    @State private var algorithm: DeltaEFormula = .CIE76
     @State private var pureBlack: Bool = true
     @State private var pureWhite: Bool = true
     @State private var pureGray: Bool = true
@@ -103,14 +101,14 @@ struct ContentView: View {
                         refreshColors(from: nsImage)
                     }
                     
-                    Picker("Method", selection: $method) {
+                    Picker("Method", selection: $algorithm) {
                         ForEach(DeltaEFormula.allCases) { method in
                             Text(method.method)
                                 .tag(method)
                         }
                     }
                     .pickerStyle(.menu)
-                    .onChange(of: method) { _ in
+                    .onChange(of: algorithm) { _ in
                         refreshColors(from: nsImage)
                     }
                     .frame(maxWidth: 160)
@@ -192,29 +190,24 @@ struct ContentView: View {
         
         colors.removeAll()
         
-        guard let cgImage = nsImage.cgImage(forProposedRect: nil, context: nil, hints: nil) else { return }
-        
         var flags = [DominantColors.Options]()
         if pureBlack { flags.append(.excludeBlack) }
         if pureWhite { flags.append(.excludeWhite) }
         if pureGray { flags.append(.excludeGray) }
         
-        let algorithm: DeltaEFormula = .CIE76
-        
         DispatchQueue.global(qos: .userInitiated).async {
             do {
                 let cgColors = try DominantColors.dominantColors(
-                    image: cgImage,
+                    nsImage: nsImage,
                     quality: .fair,
                     algorithm: algorithm,
                     maxCount: countColor,
                     options: flags,
                     sorting: sorting,
-                    deltaColors: CGFloat(deltaColor),
-                    time: false
+                    deltaColors: CGFloat(deltaColor)
                 )
                 DispatchQueue.main.async {
-                    self.colors = cgColors.map({ Color(cgColor: $0) })
+                    self.colors = cgColors.map({ Color(nsColor: $0) })
                 }
             } catch {
                 print(error.localizedDescription)

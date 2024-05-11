@@ -11,142 +11,178 @@ import DominantColors
 
 struct ContentView: View {
     
-    @State private var cgImage: CGImage?
+    @State private var uiImage: UIImage?
     @State private var colors = [Color]()
     @State private var pickerItem: PhotosPickerItem?
     @State private var imageURL: URL?
     @State private var showingAlert = false
+    @State private var showingSettings = false
+    @Environment(\.verticalSizeClass) var verticalSizeClass
+    
+    // Settings
+    @State private var formula: DeltaEFormula = .CIE94
+    @State private var countColor: Int = 6
+    @State private var quality: DominantColorQuality = .fair
+    
+    // Options
+    @State private var removeBlack: Bool = true
+    @State private var removeWhite: Bool = false
+    @State private var removeGray: Bool = false
+    
+    // Order
+    @State private var sorting: DominantColors.Sort = .frequency
     
     var body: some View {
-        VStack(spacing: .zero) {
-            Spacer()
-            
-            if let cgImage {
-                Image(uiImage: UIImage(cgImage: cgImage))
-                    .resizable()
-                    .scaledToFit()
-            } else {
-                placeholderImage
-            }
-            
-            HStack(spacing: .zero) {
-                if !colors.isEmpty {
-                    ForEach(Array(zip(colors.indices, colors)), id: \.0) { index, color in
-                        Rectangle()
-                            .fill(color)
-                    }
-                } else if cgImage != nil {
-                    ProgressView()
-                        .tint(.white)
+        NavigationStack {
+            VStack(spacing: .zero) {
+                if let uiImage {
+                    Image(uiImage: uiImage)
+                        .resizable()
+                        .scaledToFit()
+                } else {
+                    placeholderImage
                 }
             }
-            .onChange(of: cgImage) { newImage in
-                if let newImage {
-                    refreshColors(from: newImage)
-                }
-            }
-            .frame(height: 100)
-            
-            Spacer()
-        }
-        .frame(maxWidth: .infinity)
-        .background(.black)
-        .overlay(alignment: .bottom, content: {
-            HStack(spacing: 16) {
-                Button {
-                    showingAlert.toggle()
-                } label: {
-                    buttonLabel("Link")
-                }
-                .alert("Paste image URL", isPresented: $showingAlert) {
-                    TextField("URL image", value: $imageURL, format: .url)
-                        .padding()
-                    
-                    Button("OK", action: {
-                        if let imageURL {
-                            Task {
-                                await loadImage(.network(url: imageURL))
-                            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .overlay(alignment: .bottom, content: {
+                HStack(spacing: .zero) {
+                    if !colors.isEmpty {
+                        ForEach(Array(zip(colors.indices, colors)), id: \.0) { index, color in
+                            Rectangle()
+                                .fill(color)
                         }
-                    })
+                    } else if uiImage != nil {
+                        ProgressView()
+                            .tint(.white)
+                    }
+                }
+                .onChange(of: uiImage) { newImage in
+                    if let newImage {
+                        refreshColors(from: newImage)
+                    }
+                }
+                .frame(height: verticalSizeClass == .compact ? 50 : 100)
+            })
+            .ignoresSafeArea()
+            .toolbar(content: {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button {
+                        showingAlert.toggle()
+                    } label: {
+                        Image(systemName: "link.circle.fill")
+                    }
+                    .alert("Paste image URL", isPresented: $showingAlert) {
+                        TextField("URL image", value: $imageURL, format: .url)
+                            .padding()
+                        
+                        Button("OK", action: {
+                            if let imageURL {
+                                Task {
+                                    await loadImage(.network(url: imageURL))
+                                }
+                            }
+                        })
+                    }
                 }
                 
-                PhotosPicker(selection: $pickerItem, matching: .images) {
-                    buttonLabel("Gallery")
-                }
-                .onChange(of: pickerItem) { pickerItem in
-                    Task {
-                        await loadImage(.gallery(pickerItem: pickerItem))
+                ToolbarItem(placement: .topBarTrailing) {
+                    PhotosPicker(selection: $pickerItem, matching: .images) {
+                        Image(systemName: "photo.stack.fill")
+                    }
+                    .onChange(of: pickerItem) { pickerItem in
+                        Task {
+                            await loadImage(.gallery(pickerItem: pickerItem))
+                        }
                     }
                 }
+                
+                ToolbarItem(placement: .primaryAction) {
+                    Button("Setting", systemImage: "gearshape.fill") {
+                        showingSettings.toggle()
+                    }
+                }
+            })
+        }
+        .sheet(isPresented: $showingSettings, onDismiss: {
+            if let uiImage {
+                refreshColors(from: uiImage)
             }
-            .frame(maxWidth: .infinity)
-            .frame(height: 100)
+        }, content: {
+            ColorSettingsView(
+                formula: $formula,
+                countColor: $countColor,
+                quality: $quality,
+                removeBlack: $removeBlack,
+                removeWhite: $removeWhite,
+                removeGray: $removeGray,
+                sorting: $sorting
+            )
+            .presentationDetents([.fraction(0.4)])
         })
-        .ignoresSafeArea()
         .task {
             await loadImage(.asset(name: "ComeTogether"))
         }
     }
-}
-
-extension ContentView {
     
     private var placeholderImage: some View {
         Text("No image")
             .foregroundStyle(.gray)
             .frame(height: 300)
     }
-    
-    private func buttonLabel(_ text: String) -> some View {
-        Text(text)
-            .font(.system(.title3, weight: .bold))
-            .foregroundStyle(.regularMaterial)
-            .frame(maxWidth: .infinity)
-    }
-    
+}
+
+extension ContentView {
     enum LoadImageType {
         case gallery(pickerItem: PhotosPickerItem?), network(url: URL), asset(name: String)
     }
     
     private func loadImage(_ type: LoadImageType) async {
-        let resultImage: CGImage
+        let resultImage: UIImage
         switch type {
         case .gallery(let pickerItem):
             guard let data = try? await pickerItem?.loadTransferable(type: Data.self),
-                  let uiImage = UIImage(data: data),
-                  let cgImage = uiImage.cgImage
+                  let uiImage = UIImage(data: data)
             else { return }
             
-            resultImage = cgImage
+            resultImage = uiImage
         case .network(let url):
             guard let result = try? await URLSession.shared.data(from: url),
-                  let cgImage = UIImage(data: result.0)?.cgImage
+                  let uiImage = UIImage(data: result.0)
             else { return }
             
-            resultImage = cgImage
+            resultImage = uiImage
         case .asset(let name):
-            guard let uiImage = UIImage(named: name),
-                  let cgImage = uiImage.cgImage
-            else { return }
+            guard let uiImage = UIImage(named: name) else { return }
             
-            resultImage = cgImage
+            resultImage = uiImage
         }
         
         DispatchQueue.main.async {
-            cgImage = resultImage
+            self.uiImage = resultImage
         }
     }
     
-    private func refreshColors(from cgImage: CGImage){
+    private func refreshColors(from uiImage: UIImage){
         colors.removeAll()
+        
         Task {
-            guard let cgColors = try? DominantColors.dominantColors(image: cgImage, maxCount: 8, options: [.excludeBlack, .excludeWhite])
+            var options: [DominantColors.Options] = []
+            if removeBlack { options.append(.excludeBlack) }
+            if removeWhite { options.append(.excludeWhite) }
+            if removeGray { options.append(.excludeGray) }
+            
+            guard let cgColors = try? DominantColors.dominantColors(
+                uiImage: uiImage,
+                quality: quality,
+                algorithm: formula,
+                maxCount: countColor,
+                options: options,
+                sorting: sorting
+            )
             else { return }
             
-            
             DispatchQueue.main.async {
-                self.colors = cgColors.map({ Color(cgColor: $0) })
+                self.colors = cgColors.map({ Color(uiColor: $0) })
             }
         }
     }
@@ -154,4 +190,5 @@ extension ContentView {
 
 #Preview {
     ContentView()
+        .preferredColorScheme(.dark)
 }

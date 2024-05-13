@@ -368,8 +368,8 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/DenDmitriev/DominantColors";
 			requirement = {
-				branch = "add-support-gray-gamma";
-				kind = branch;
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.1.8;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */

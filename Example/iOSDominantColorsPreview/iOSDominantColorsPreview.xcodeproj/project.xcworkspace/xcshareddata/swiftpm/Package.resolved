@@ -5,8 +5,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/DenDmitriev/DominantColors",
       "state" : {
-        "branch" : "add-support-gray-gamma",
-        "revision" : "1c4895333b69addc2d8da9331006fa88324cb8db"
+        "revision" : "8b2d6a130182560b4db2c30a4bbede5fe35db5a4",
+        "version" : "1.1.8"
       }
     }
   ],

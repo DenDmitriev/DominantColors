@@ -14,6 +14,31 @@ struct RGB: Hashable {
 }
 
 extension CGColor {
+    
+    #if os(iOS)
+    public static var black: CGColor {
+        CGColor(red: 0, green: 0, blue: 0, alpha: 1)
+    }
+    
+    public static var white: CGColor {
+        CGColor(red: 1, green: 1, blue: 1, alpha: 1)
+    }
+    #endif
+    
+    public static var red: CGColor {
+        CGColor(red: 1, green: 0, blue: 0, alpha: 1)
+    }
+    
+    public static var green: CGColor {
+        CGColor(red: 0, green: 1, blue: 0, alpha: 1)
+    }
+    
+    public static var blue: CGColor {
+        CGColor(red: 0, green: 0, blue: 1, alpha: 1)
+    }
+}
+
+extension CGColor {
     // MARK: - Public
     
     /// The red (R) channel of the RGB color space as a value from 0.0 to 1.0.
@@ -30,11 +55,6 @@ extension CGColor {
     public var blue: CGFloat {
         CIColor(cgColor: self).blue
     }
-    
-    /// The alpha (a) channel of the RGBa color space as a value from 0.0 to 1.0.
-//    public var alpha: CGFloat {
-//        CIColor(cgColor: self).alpha
-//    }
     
     // MARK: Internal
     

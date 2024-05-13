@@ -16,11 +16,12 @@ struct Preview: View {
     @State private var cgImage: CGImage?
     @State private var cgImageSize: CGSize = .zero
     @State private var colors = [Color]()
+    @State private var contrastColors: ContrastColors?
     @State private var sorting: DominantColors.Sort = .frequency
     @State private var algorithm: DeltaEFormula = .CIE76
     @State private var pureBlack: Bool = true
     @State private var pureWhite: Bool = true
-    @State private var pureGray: Bool = true
+    @State private var pureGray: Bool = false
     @State private var deltaColor: Int = 10
     @State private var countColors: Int = 6
     
@@ -29,12 +30,17 @@ struct Preview: View {
             // Image group
             VStack(spacing: 0) {
                 ImageSlider(imageNames: Self.images, selection: $selection)
+                    .frame(height: 400)
+                    .background(.gray)
                     .onAppear {
                         loadImage(Self.images[selection])
                     }
                     .onChange(of: selection) { newSelection in
                         loadImage(Self.images[newSelection])
                     }
+                
+                Title(title: "Title", subtitle: "Subtitle", contrastColors: $contrastColors)
+                    .frame(height: 100)
                 
                 HStack(spacing: 3) {
                     if !colors.isEmpty, uiImage != nil {
@@ -52,6 +58,7 @@ struct Preview: View {
                 }
                 .animation(.snappy, value: colors)
                 .padding(3)
+                .background(.secondary)
                 .background(.gray)
                 .onChange(of: uiImage) { newImage in
                     refreshColors(from: newImage)
@@ -61,96 +68,93 @@ struct Preview: View {
             }
             
             // Setting group
-            VStack {
-                VStack(spacing: 16) {
-                    HStack{
-                        Text("Sorting")
-                        Picker("Sorting", selection: $sorting) {
-                            ForEach(DominantColors.Sort.allCases) { sorting in
-                                Text(sorting.name)
-                                    .tag(sorting)
-                            }
-                        }
-                        .pickerStyle(.segmented)
-                        .onChange(of: sorting) { _ in
-                            refreshColors(from: uiImage)
-                        }
-                    }
-                    HStack {
-                        Text("Method")
-                        Picker("Method", selection: $algorithm) {
-                            ForEach(DeltaEFormula.allCases) { algorithm in
-                                Text(algorithm.method)
-                                    .tag(algorithm)
-                            }
-                        }
-                        .pickerStyle(.segmented)
-                        .onChange(of: algorithm) { _ in
-                            refreshColors(from: uiImage)
-                        }
-                    }
-                    
-                    HStack(spacing: 16) {
+            ScrollView {
+                VStack {
+                    VStack(spacing: 16) {
                         HStack {
-                            Text("Color Delta")
-                            TextField("Delta", value: $deltaColor, format: .number)
-                                .textFieldStyle(RoundedBorderTextFieldStyle())
-                                .frame(width: 64)
+                            HStack {
+                                Text("Method")
+                                Picker("Method", selection: $algorithm) {
+                                    ForEach(DeltaEFormula.allCases) { algorithm in
+                                        Text(algorithm.method)
+                                            .tag(algorithm)
+                                    }
+                                }
+                                .onChange(of: algorithm) { _ in
+                                    refreshColors()
+                                }
+                            }
+                            
+                            HStack{
+                                Text("Sorting")
+                                Picker("Sorting", selection: $sorting) {
+                                    ForEach(DominantColors.Sort.allCases) { sorting in
+                                        Text(sorting.name)
+                                            .tag(sorting)
+                                    }
+                                }
+                                .onChange(of: sorting) { _ in
+                                    refreshColors()
+                                }
+                            }
+                            
+                            Spacer()
                         }
+                        .pickerStyle(.menu)
                         
-                        HStack {
-                            Text("Color Count")
-                            TextField("Delta", value: $countColors, format: .number)
-                                .textFieldStyle(RoundedBorderTextFieldStyle())
-                                .frame(width: 64)
+                        HStack(spacing: 16) {
+                            HStack {
+                                Text("Color Delta")
+                                TextField("Delta", value: $deltaColor, format: .number)
+                                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                                    .frame(width: 64)
+                            }
+                            
+                            HStack {
+                                Text("Color Count")
+                                TextField("Delta", value: $countColors, format: .number)
+                                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                                    .frame(width: 64)
+                            }
+                            
+                            Spacer()
                         }
                         
                         Spacer()
                     }
                     
-                    Spacer()
+                    HStack(spacing: 16) {
+                        OptionToggle(isEnable: $pureBlack, color: .black)
+                        OptionToggle(isEnable: $pureGray, color: .gray)
+                        OptionToggle(isEnable: $pureWhite, color: .white)
+                        Spacer()
+                    }
+                    .onChange(of: [pureBlack, pureGray, pureWhite]) { _ in
+                        refreshColors()
+                    }
                 }
-                
-                VStack {
-                    Toggle("Pure black", isOn: $pureBlack)
-                        .onChange(of: pureBlack) { _ in
-                            refreshColors(from: uiImage)
-                        }
-                    
-                    Toggle("Pure white", isOn: $pureWhite)
-                        .onChange(of: pureWhite) { _ in
-                            refreshColors(from: uiImage)
-                        }
-                    
-                    Toggle("Pure gray", isOn: $pureGray)
-                        .onChange(of: pureGray) { _ in
-                            refreshColors(from: uiImage)
-                        }
-                    
-                    Spacer()
-                    
-                    Text("Colors count result: \(colors.count)")
-                }
+                .padding()
             }
-            .padding()
             
-            Button(action: {
-                if let uiImage {
-                    refreshColors(from: uiImage)
-                }
-            }, label: {
+            Button(action: refreshColors, label: {
                 Label("Refresh", systemImage: "arrow.clockwise.circle.fill")
             })
             .buttonStyle(.borderedProminent)
             .disabled(colors.isEmpty)
         }
-        .ignoresSafeArea(.container, edges: .top)
+        .ignoresSafeArea(edges: .top)
     }
     
     private var placeholderImage: some View {
         Text("No image")
             .foregroundStyle(.gray)
             .frame(height: 300)
+    }
+    
+    private func refreshColors() {
+        if let uiImage {
+            refreshColors(from: uiImage)
+        }
     }
     
     private func loadImage(_ name: String) {
@@ -175,15 +179,21 @@ struct Preview: View {
             do {
                 let uiColors = try DominantColors.dominantColors(
                     uiImage: uiImage,
-                    quality: .high,
+                    quality: .fair,
                     algorithm: algorithm,
                     maxCount: countColors,
                     options: flags,
                     sorting: sorting,
-                    deltaColors: CGFloat(deltaColor)
+                    deltaColors: CGFloat(deltaColor),
+                    timeLog: true
                 )
                 DispatchQueue.main.async {
                     self.colors = uiColors.map({ Color(uiColor: $0) })
+                }
+                
+                let contrastColors = ContrastColors(colors: uiColors.map({ $0.cgColor }))
+                DispatchQueue.main.async {
+                    self.contrastColors = contrastColors
                 }
             } catch {
                 print(error.localizedDescription)
@@ -191,6 +201,62 @@ struct Preview: View {
         }
     }
 }
+
+@available(iOS 15.0, *)
+struct OptionToggle: View {
+    @Binding var isEnable: Bool
+    let color: Color
+    var body: some View {
+        Circle()
+            .stroke(.gray, lineWidth: 3)
+            .background(Circle().fill(color))
+            .frame(width: 33)
+            .overlay {
+                if isEnable {
+                    Image(systemName: "checkmark")
+                        .font(.title3.weight(.black))
+                        .foregroundStyle(.tint)
+                }
+            }
+            .onTapGesture {
+                withAnimation {
+                    isEnable.toggle()
+                }
+            }
+    }
+}
+
+@available(iOS 15.0, *)
+struct Title: View {
+    @State var title: String
+    @State var subtitle: String
+    @Binding var contrastColors: ContrastColors?
+    
+    var body: some View {
+        VStack {
+            if let contrastColors {
+                VStack {
+                    Text(title)
+                        .font(.largeTitle)
+                        .foregroundStyle(Color(cgColor: contrastColors.primary))
+                    
+                    Text(subtitle)
+                        .font(.title3)
+                        .foregroundStyle(Color(cgColor: contrastColors.secondary ?? CGColor(gray: 0, alpha: 0)))
+                }
+                .padding()
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .background(Color(cgColor: contrastColors.background))
+            } else {
+                Color.gray
+                    .overlay {
+                        Text("No colors")
+                    }
+            }
+        }
+    }
+}
+
 @available(iOS 15.0, *)
 struct ImageSlider: View {
     let imageNames: [String]

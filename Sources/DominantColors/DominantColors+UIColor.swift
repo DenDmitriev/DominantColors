@@ -31,7 +31,7 @@ extension DominantColors {
     public static func dominantColors(
         uiImage: UIImage,
         quality: DominantColorQuality = .fair,
-        algorithm: DeltaEFormula = .CIE76,
+        algorithm: DeltaEFormula = .CIE94,
         maxCount: Int = 8,
         options: [Options] = [],
         sorting: Sort = .frequency,

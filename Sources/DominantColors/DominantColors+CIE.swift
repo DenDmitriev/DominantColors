@@ -29,7 +29,7 @@ extension DominantColors {
     public static func dominantColors(
         image: CGImage,
         quality: DominantColorQuality = .fair,
-        algorithm: DeltaEFormula = .CIE76,
+        algorithm: DeltaEFormula = .CIE94,
         maxCount: Int = 8,
         options: [Options] = [],
         sorting: Sort = .frequency,
@@ -39,7 +39,7 @@ extension DominantColors {
     ) throws -> [CGColor] {
         let dominantColorFrequencies = try dominantColorFrequencies(
             image: image,
-                    quality: quality,
+            quality: quality,
             formula: algorithm,
             maxCount: maxCount,
             options: options,
@@ -176,11 +176,16 @@ extension DominantColors {
             deltaColorsIncrement += 1
         }
         if timeLog { Self.log(from: &processTime, label: "Step 6. Combine similar colors.") }
-        // Add color if the combination results in few colors
-//        let countForAdd = maxCount - dominantColors.count
-//        if countForAdd > 0 {
-//            addColors(count: countForAdd, to: &dominantColors, from: dominantColorsByShade, formula: formula, deltaColors: deltaColors)
-//        }
+        
+        // ------
+        // Step 6.1: Add color if the combination results in few colors.
+        // ------
+        if dominantColors.count < maxCount {
+            let countForAdd = maxCount - dominantColors.count
+            let additionalColors = getAdditionalColors(count: countForAdd, current: dominantColors, from: dominantColorsByShade, formula: formula, deltaColors: deltaColors)
+            dominantColors.append(contentsOf: additionalColors)
+        }
+        if timeLog { Self.log(from: &processTime, label: "Step 6.1. Add colors if count less.") }
         
         // ------
         // Step 7: Let's sort the colors by the requested type.
@@ -341,24 +346,39 @@ extension DominantColors {
               let data = CFDataGetBytePtr(cfData)
         else { throw ImageColorError.cgImageDataFailure }
         
+        var channels = 4
+        if grayColorSpaces.contains(image.colorSpace) {
+            channels = 2 // gray and alpha
+        }
+        
         let colorsOnImage = NSCountedSet(capacity: Int(image.resolution.area))
         for yCoordonate in 0 ..< image.height {
             for xCoordonate in 0 ..< image.width {
-                let index = (image.width * yCoordonate + xCoordonate) * 4
-                
-                // Let's make sure there is enough alpha 150 / 250 = 60%.
-                let alpha = data[index + 3]
-                guard alpha > 150 else {
-                    continue
+                let index = (image.width * yCoordonate + xCoordonate) * channels
+                var pixelColor: RGB255?
+                if channels == 4 {
+                    // Let's make sure there is enough alpha 150 / 250 = 60%.
+                    let alpha = data[index + 3]
+                    guard alpha > 150 else {
+                        continue
+                    }
+                    
+                    let red = data[index + 0]
+                    let green = data[index + 1]
+                    let blue = data[index + 2]
+                    pixelColor = RGB255(red: red, green: green, blue: blue)
+                } else if channels == 2 {
+                    // Let's make sure there is enough alpha 150 / 250 = 60%.
+                    let alpha = data[index + 1]
+                    guard alpha > 150 else {
+                        continue
+                    }
+                    let gray = data[index]
+                    pixelColor = RGB255(red: gray, green: gray, blue: gray)
                 }
-                
-                let red = data[index + 0]
-                let green = data[index + 1]
-                let blue = data[index + 2]
-                
-                let pixelColor = RGB255(red: red, green: green, blue: blue)
-                
-                colorsOnImage.add(pixelColor)
+                if let pixelColor {
+                    colorsOnImage.add(pixelColor)
+                }
             }
         }
         
@@ -371,25 +391,41 @@ extension DominantColors {
               let data = CFDataGetBytePtr(cfData)
         else { throw ImageColorError.cgImageDataFailure }
         
+        var channels = 4
+        if grayColorSpaces.contains(image.colorSpace) {
+            channels = 2 // gray and alpha
+        }
+        
         let colorsOnImage = NSCountedSet(capacity: Int(image.resolution.area))
         for yCoordonate in 0 ..< image.height / pixelSize {
             for xCoordonate in 0 ..< image.width / pixelSize {
                 let inset = pixelSize / 2
-                let index = (image.width * yCoordonate + xCoordonate + inset) * pixelSize * 4
-                
-                // Let's make sure there is enough alpha 150 / 250 = 60%.
-                let alpha = data[index + 3]
-                guard alpha > 150 else {
-                    continue
+                let index = (image.width * yCoordonate + xCoordonate + inset) * pixelSize * channels
+                var pixelColor: RGB255?
+                if channels == 4 {
+                    // Let's make sure there is enough alpha 150 / 250 = 60%.
+                    let alpha = data[index + 3]
+                    guard alpha > 150 else {
+                        continue
+                    }
+                    
+                    let red = data[index + 0]
+                    let green = data[index + 1]
+                    let blue = data[index + 2]
+                    pixelColor = RGB255(red: red, green: green, blue: blue)
+                } else if channels == 2 {
+                    // Let's make sure there is enough alpha 150 / 250 = 60%.
+                    let alpha = data[index + 1]
+                    guard alpha > 150 else {
+                        continue
+                    }
+                    let gray = data[index]
+                    pixelColor = RGB255(red: gray, green: gray, blue: gray)
                 }
                 
-                let red = data[index + 0]
-                let green = data[index + 1]
-                let blue = data[index + 2]
-                
-                let pixelColor = RGB255(red: red, green: green, blue: blue)
-                
-                colorsOnImage.add(pixelColor)
+                if let pixelColor {
+                    colorsOnImage.add(pixelColor)
+                }
             }
         }
         
@@ -477,27 +513,28 @@ extension DominantColors {
     }
     
     /// Adds missing colors from those not included in the selection
-    static func addColors(count: Int, to dominantColors: inout [ColorFrequency], from dominantColorsByShade: [ColorShade: [ColorFrequency]], formula: DeltaEFormula, deltaColors: CGFloat) {
-        guard dominantColors.count < count else { return }
-        var count = count
-        while count > 0 {
-            let black = CGColor(srgbRed: 0, green: 0, blue: 0, alpha: 1.0)
-            var colorBeat = ColorFrequency(color: black, count: 0)
-            for (_, colorFrequencies) in dominantColorsByShade {
-            colorFrequenciesLoop: for colorFrequency in colorFrequencies.sorted(by: { $0.normal > $1.normal }) {
-                guard colorBeat.normal < colorFrequency.normal,
-                      !dominantColors.contains(colorFrequency)
+    static func getAdditionalColors(count: Int, current dominantColors: [ColorFrequency], from dominantColorsByShade: [ColorShade: [ColorFrequency]], formula: DeltaEFormula, deltaColors: CGFloat) -> [ColorFrequency] {
+        var result = [ColorFrequency]()
+        
+        let sortedColorShades = Array(dominantColorsByShade.keys).sorted()
+        colorShadeLoop: for colorShade in sortedColorShades {
+            guard let dominantColorsOfShade = dominantColorsByShade[colorShade] else { continue }
+            for colorFrequency in dominantColorsOfShade.sorted(by: { $0.normal > $1.normal }) {
+                guard !dominantColors.contains(colorFrequency),
+                      !result.contains(colorFrequency)
                 else { continue }
-                for dominantColor in dominantColors {
-                    let differenceScore = colorFrequency.color.difference(from: dominantColor.color, using: formula).associatedValue
-                    if differenceScore < deltaColors { continue colorFrequenciesLoop }
-                }
-                colorBeat = colorFrequency
-                break
+                result.append(colorFrequency)
+                if result.count >= count { break colorShadeLoop }
             }
-            }
-            dominantColors.append(colorBeat)
-            count -= 1
         }
+        
+        return result
     }
+    
+    private static var grayColorSpaces: [CGColorSpace?] = [
+        CGColorSpace(name: CGColorSpace.genericGrayGamma2_2),
+        CGColorSpace(name: CGColorSpace.linearGray),
+        CGColorSpace(name: CGColorSpace.extendedGray),
+        CGColorSpace(name: CGColorSpace.extendedLinearGray),
+    ]
 }

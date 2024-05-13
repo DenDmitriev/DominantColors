@@ -18,6 +18,9 @@ struct ContentView: View {
     @State private var showingAlert = false
     @State private var showingSettings = false
     @Environment(\.verticalSizeClass) var verticalSizeClass
+    @State private var showUI = true
+    
+    @State private var contrastColors: ContrastColors?
     
     // Settings
     @State private var formula: DeltaEFormula = .CIE94
@@ -44,6 +47,12 @@ struct ContentView: View {
                 }
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .overlay(alignment: .bottom) {
+                if showUI {
+                    TitleView(title: "Title", subtitle: "Subtitle", contrastColors: $contrastColors)
+                        .padding(.bottom, 140)
+                }
+            }
             .overlay(alignment: .bottom, content: {
                 HStack(spacing: .zero) {
                     if !colors.isEmpty {
@@ -64,44 +73,49 @@ struct ContentView: View {
                 .frame(height: verticalSizeClass == .compact ? 50 : 100)
             })
             .ignoresSafeArea()
-            .toolbar(content: {
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button {
-                        showingAlert.toggle()
-                    } label: {
-                        Image(systemName: "link.circle.fill")
-                    }
-                    .alert("Paste image URL", isPresented: $showingAlert) {
-                        TextField("URL image", value: $imageURL, format: .url)
-                            .padding()
-                        
-                        Button("OK", action: {
-                            if let imageURL {
-                                Task {
-                                    await loadImage(.network(url: imageURL))
+            .toolbar {
+                if showUI {
+                    ToolbarItem(placement: .topBarTrailing) {
+                        Button {
+                            showingAlert.toggle()
+                        } label: {
+                            Image(systemName: "link.circle.fill")
+                        }
+                        .alert("Paste image URL", isPresented: $showingAlert) {
+                            TextField("URL image", value: $imageURL, format: .url)
+                                .padding()
+                            
+                            Button("OK", action: {
+                                if let imageURL {
+                                    Task {
+                                        await loadImage(.network(url: imageURL))
+                                    }
                                 }
+                            })
+                        }
+                    }
+                    
+                    ToolbarItem(placement: .topBarTrailing) {
+                        PhotosPicker(selection: $pickerItem, matching: .images) {
+                            Image(systemName: "photo.stack.fill")
+                        }
+                        .onChange(of: pickerItem) { pickerItem in
+                            Task {
+                                await loadImage(.gallery(pickerItem: pickerItem))
                             }
-                        })
+                        }
                     }
-                }
-                
-                ToolbarItem(placement: .topBarTrailing) {
-                    PhotosPicker(selection: $pickerItem, matching: .images) {
-                        Image(systemName: "photo.stack.fill")
-                    }
-                    .onChange(of: pickerItem) { pickerItem in
-                        Task {
-                            await loadImage(.gallery(pickerItem: pickerItem))
+                    
+                    ToolbarItem(placement: .primaryAction) {
+                        Button("Setting", systemImage: "gearshape.fill") {
+                            showingSettings.toggle()
                         }
                     }
                 }
-                
-                ToolbarItem(placement: .primaryAction) {
-                    Button("Setting", systemImage: "gearshape.fill") {
-                        showingSettings.toggle()
-                    }
-                }
-            })
+            }
+        }
+        .onTapGesture {
+            showUI.toggle()
         }
         .sheet(isPresented: $showingSettings, onDismiss: {
             if let uiImage {
@@ -171,7 +185,7 @@ extension ContentView {
             if removeWhite { options.append(.excludeWhite) }
             if removeGray { options.append(.excludeGray) }
             
-            guard let cgColors = try? DominantColors.dominantColors(
+            guard let uiColors = try? DominantColors.dominantColors(
                 uiImage: uiImage,
                 quality: quality,
                 algorithm: formula,
@@ -181,8 +195,16 @@ extension ContentView {
             )
             else { return }
             
+            let dominantColors = try! uiImage.dominantColors(max: 6)
             DispatchQueue.main.async {
-                self.colors = cgColors.map({ Color(uiColor: $0) })
+//                self.colors = uiColors.map({ Color(uiColor: $0) })
+                self.colors = dominantColors.map({ Color(uiColor: $0) })
+            }
+            
+            let contrastColors = ContrastColors(colors: uiColors.map({ $0.cgColor }))
+            
+            DispatchQueue.main.async {
+                self.contrastColors = contrastColors
             }
         }
     }

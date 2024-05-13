@@ -12,6 +12,7 @@
 		95613B852BE2DB5D0068A5A7 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95613B842BE2DB5D0068A5A7 /* ContentView.swift */; };
 		95613B872BE2DB5E0068A5A7 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 95613B862BE2DB5E0068A5A7 /* Assets.xcassets */; };
 		95613B8A2BE2DB5E0068A5A7 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 95613B892BE2DB5E0068A5A7 /* Preview Assets.xcassets */; };
+		9563DE182BF1CF870015C041 /* TitleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9563DE172BF1CF870015C041 /* TitleView.swift */; };
 		957F84DD2BEFD91B00B4654E /* ColorSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 957F84DC2BEFD91B00B4654E /* ColorSettingsView.swift */; };
 /* End PBXBuildFile section */
 
@@ -21,6 +22,7 @@
 		95613B842BE2DB5D0068A5A7 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		95613B862BE2DB5E0068A5A7 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		95613B892BE2DB5E0068A5A7 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		9563DE172BF1CF870015C041 /* TitleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TitleView.swift; sourceTree = "<group>"; };
 		957F84DC2BEFD91B00B4654E /* ColorSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorSettingsView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -57,6 +59,7 @@
 			children = (
 				95613B822BE2DB5D0068A5A7 /* iOSDominantColorsPreviewApp.swift */,
 				95613B842BE2DB5D0068A5A7 /* ContentView.swift */,
+				9563DE172BF1CF870015C041 /* TitleView.swift */,
 				957F84DC2BEFD91B00B4654E /* ColorSettingsView.swift */,
 				95613B862BE2DB5E0068A5A7 /* Assets.xcassets */,
 				95613B882BE2DB5E0068A5A7 /* Preview Content */,
@@ -151,6 +154,7 @@
 				957F84DD2BEFD91B00B4654E /* ColorSettingsView.swift in Sources */,
 				95613B852BE2DB5D0068A5A7 /* ContentView.swift in Sources */,
 				95613B832BE2DB5D0068A5A7 /* iOSDominantColorsPreviewApp.swift in Sources */,
+				9563DE182BF1CF870015C041 /* TitleView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -364,8 +368,8 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/DenDmitriev/DominantColors";
 			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 1.1.7;
+				branch = "add-support-gray-gamma";
+				kind = branch;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */

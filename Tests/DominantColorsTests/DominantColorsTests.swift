@@ -109,7 +109,7 @@ class DominantColorsTests: XCTestCase {
         let name = NSImage.Name("WaterLife1")
         let nsImage = Bundle.module.image(forResource: name)
         let cgImage = nsImage!.cgImage(forProposedRect: nil, context: nil, hints: nil)!
-        let dominantColors = try DominantColors.dominantColorFrequencies(image: cgImage,         quality: .best, options: [.excludeBlack, .excludeGray, .excludeWhite])
+        let dominantColors = try DominantColors.dominantColorFrequencies(image: cgImage, quality: .best, options: [.excludeBlack, .excludeGray, .excludeWhite])
         
         XCTAssertGreaterThan(dominantColors.count, 12)
     }

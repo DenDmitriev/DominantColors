@@ -39,5 +39,28 @@ final class ExtractColorsTests: XCTestCase {
         XCTAssertEqual(colorsCountedSet.count(for: RGB255(red: 33, green: 150, blue: 83)), 1)
         XCTAssertEqual(colorsCountedSet.count(for: RGB255(red: 155, green: 81, blue: 224)), 1)
     }
+    
+    func testGrayColorSpace() throws {
+        let name = NSImage.Name("GrayColorSpaceImage")
+        let nsImage = Bundle.module.image(forResource: name)
+        let cgImage = nsImage!.cgImage(forProposedRect: nil, context: nil, hints: nil)!
+        
+        let colorsCountedSet = try DominantColors.extractColors(cgImage)
+        XCTAssertEqual(colorsCountedSet.count(for: RGB255(red: 255, green: 255, blue: 255)), 1)
+        XCTAssertEqual(colorsCountedSet.count(for: RGB255(red: 129, green: 129, blue: 129)), 2)
+        XCTAssertEqual(colorsCountedSet.count(for: RGB255(red: 0, green: 0, blue: 0)), 1)
+    }
+    
+    func testGrayColorSpacePixelate() throws {
+        let name = NSImage.Name("ShadesGrayColorSpace")
+        let nsImage = Bundle.module.image(forResource: name)
+        let cgImage = nsImage!.cgImage(forProposedRect: nil, context: nil, hints: nil)!
+        
+        let colorsCountedSet = try DominantColors.extractColors(pixellate: cgImage, pixelSize: 50)
+        XCTAssertEqual(colorsCountedSet.count(for: RGB255(red: 255, green: 255, blue: 255)), 1)
+        XCTAssertEqual(colorsCountedSet.count(for: RGB255(red: 129, green: 129, blue: 129)), 1)
+        XCTAssertEqual(colorsCountedSet.count(for: RGB255(red: 0, green: 0, blue: 0)), 1)
+        XCTAssertEqual(colorsCountedSet.count(for: RGB255(red: 46, green: 46, blue: 46)), 1)
+    }
 }
 #endif

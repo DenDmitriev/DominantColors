@@ -394,3 +394,7 @@ extension ColorShade: CustomStringConvertible {
         }
     }
 }
+
+extension ColorShade: Comparable {
+    
+}

@@ -10,7 +10,7 @@ import SwiftUI
 @available(iOS 15.0, *)
 struct Preview: View {
     
-    private static let images = ["GragDavid", "LittleMissSunshine", "bladerunner056", "TheLifeAquaticWithSteveZissou", "ComeTogether", "blackwhite", "bladerunner042"]
+    private static let images = ["LittleMissSunshine", "bladerunner056", "TheLifeAquaticWithSteveZissou", "ComeTogether", "blackwhite", "bladerunner042"]
     @State private var selection: Int = .zero
     @State private var uiImage: UIImage?
     @State private var cgImage: CGImage?

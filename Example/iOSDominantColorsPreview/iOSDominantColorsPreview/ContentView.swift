@@ -42,6 +42,9 @@ struct ContentView: View {
                     Image(uiImage: uiImage)
                         .resizable()
                         .scaledToFit()
+                        .onTapGesture {
+                            showUI.toggle()
+                        }
                 } else {
                     placeholderImage
                 }
@@ -113,9 +116,6 @@ struct ContentView: View {
                     }
                 }
             }
-        }
-        .onTapGesture {
-            showUI.toggle()
         }
         .sheet(isPresented: $showingSettings, onDismiss: {
             if let uiImage {
@@ -194,11 +194,9 @@ extension ContentView {
                 sorting: sorting
             )
             else { return }
-            
-            let dominantColors = try! uiImage.dominantColors(max: 6)
+
             DispatchQueue.main.async {
-//                self.colors = uiColors.map({ Color(uiColor: $0) })
-                self.colors = dominantColors.map({ Color(uiColor: $0) })
+                self.colors = uiColors.map({ Color(uiColor: $0) })
             }
             
             let contrastColors = ContrastColors(colors: uiColors.map({ $0.cgColor }))

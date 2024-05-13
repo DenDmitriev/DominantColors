@@ -23,33 +23,29 @@ The DominantColors makes it easy to find the dominant colors of the image. It re
 
 
 ## How to use
+### Standard settings
+A quick way to get colors from an image where the image type is `CGImage`, `UIImage` or `NSImage`:
 ```swift
 let dominantColors = try? image.dominantColors(max: 6) // Array of UIColor, NSColor or CGColor
 ```
-
-## Custom settings
-### Standard settings
-Get the `CGColors` according to the standard settings:
+If you need more settings, then call the method directly from the library according to the standard settings:
 ```swift
+// Get the CGColors according to the standard settings:
 let cgColors = try? DominantColors.dominantColors(image: cgImage, maxCount: 6)
-```
-Get the `UIColors` according to the standard settings:
-```swift
+
+// Get the UIColors according to the standard settings
 let uiColors = try? DominantColors.dominantColors(uiImage: uiImage, maxCount: 6)
-```
-Get the `NSColors` according to the standard settings:
-```swift
+
+// Get the NSColors according to the standard settings:
 let nsColors = try? DominantColors.dominantColors(nsImage: nsImage, maxCount: 6)
-```
-Get the `Color.Resolved` according to the standard settings:
-```swift
+
+// Get the `Color.Resolved` according to the standard settings:
 let colorsResolved =  try? DominantColors.dominantColorsResolved(image: cgImage)
 ```
-
+## Custom settings
 **Next examples are given for `CGColor`, but this is also true for `UIColor` and `NSColor`**
 
 ### Algorithm settings
-
 Get colors by selecting algorithm. Extract colors by specifying the [color difference formula](https://en.wikipedia.org/wiki/Color_difference):
 ```swift
 let cgColors = try? DominantColors.dominantColors(image: cgImage, algorithm: .CIE76)

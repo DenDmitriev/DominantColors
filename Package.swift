@@ -1,10 +1,10 @@
-// swift-tools-version: 5.8
+// swift-tools-version: 5.9
 // The swift-tools-version declares the minimum version of Swift required to build this package.
 
 import PackageDescription
 
 let package = Package(
-    name: "DominantColors",
+    name: "DC",
     platforms: [
         .macOS(.v11),
         .iOS(.v13),
@@ -26,7 +26,8 @@ let package = Package(
         // Targets can depend on other targets in this package, and on products in packages this package depends on.
         .target(
             name: "DominantColors",
-            dependencies: [],
+            dependencies: [], 
+            path: "Sources/DominantColors",
             resources: [.process("Resources/Media.xcassets")]),
         .testTarget(
             name: "DominantColorsTests",

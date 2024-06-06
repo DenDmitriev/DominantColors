@@ -4,7 +4,7 @@
 import PackageDescription
 
 let package = Package(
-    name: "DC",
+    name: "DCLib",
     platforms: [
         .macOS(.v11),
         .iOS(.v13),

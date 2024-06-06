@@ -368,8 +368,8 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/DenDmitriev/DominantColors";
 			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 1.1.8;
+				branch = main;
+				kind = branch;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */

@@ -5,6 +5,9 @@ A library for extracting color from an image.
 
 - [Features](#features)
 - [How to use](#how-to-use)
+- [Contrast colors](#contrast-colors)
+- [Average colors](#average-colors)
+- [Cluster colors](#cluster-colors)
 - [Installation](#installation)
 - [Example](#example)
 - [How the algorithm works](#how-the-algorithm-works)
@@ -74,17 +77,33 @@ let cgColors = try? DominantColors.dominantColors(image: cgImage, maxCount: 6, s
 The default is `frequency`, which sorts colors in descending order of their number of pixels with that color.
 
 
-### Average colors
+# Average colors
 Get the average color by dividing the image into segments horizontally:
 ```swift
 let cgColors = try? DominantColors.averageColors(image: cgImage, count: 8)
 ```
 
-### Cluster colors
+# Cluster colors
 Finds the dominant colors of an image by using a k-means clustering algorithm:
 ```swift
 let cgColors = try? DominantColors.kMeansClusteringColors(image: cgImage, quality: .fair, count: 10)
 ```
+
+# Contrast colors
+In order to obtain colors for displaying text or accompanying content based on the palette of the ordered image, you must use `ContrastColors`:
+```swift
+let dominantColors = try image.dominantColors()
+let contrastColors = ContrastColors(colors: dominantColors.map({ $0.cgColor }))
+
+let backgroundColor = contrastColors?.background 
+let primaryColor = contrastColors?.primary
+let secondaryColor = contrastColors?.secondary
+```
+You can get this result used `backgroundColor` for background, `primaryColor` for title and `secondaryColor` for subtitle:
+
+<img width="240" alt="Снимок экрана 2024-05-13 в 08 49 30" src="https://github.com/DenDmitriev/DominantColors/assets/65191747/90195830-5679-47e6-8ffc-004e482f017f">
+<img width="240" alt="Снимок экрана 2024-05-13 в 08 50 04" src="https://github.com/DenDmitriev/DominantColors/assets/65191747/6fa57bc5-83bf-4676-be0a-9e8ace623cc4">
+
 
 ## Example
 ### macOS

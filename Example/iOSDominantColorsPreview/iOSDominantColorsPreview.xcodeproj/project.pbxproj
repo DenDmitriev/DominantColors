@@ -7,13 +7,13 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		95278EF92BE366E1008F8B89 /* DominantColors in Frameworks */ = {isa = PBXBuildFile; productRef = 95278EF82BE366E1008F8B89 /* DominantColors */; };
 		95613B832BE2DB5D0068A5A7 /* iOSDominantColorsPreviewApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95613B822BE2DB5D0068A5A7 /* iOSDominantColorsPreviewApp.swift */; };
 		95613B852BE2DB5D0068A5A7 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95613B842BE2DB5D0068A5A7 /* ContentView.swift */; };
 		95613B872BE2DB5E0068A5A7 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 95613B862BE2DB5E0068A5A7 /* Assets.xcassets */; };
 		95613B8A2BE2DB5E0068A5A7 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 95613B892BE2DB5E0068A5A7 /* Preview Assets.xcassets */; };
 		9563DE182BF1CF870015C041 /* TitleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9563DE172BF1CF870015C041 /* TitleView.swift */; };
 		957F84DD2BEFD91B00B4654E /* ColorSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 957F84DC2BEFD91B00B4654E /* ColorSettingsView.swift */; };
+		959EE2442C119CD60061E678 /* DominantColors in Frameworks */ = {isa = PBXBuildFile; productRef = 959EE2432C119CD60061E678 /* DominantColors */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -31,7 +31,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				95278EF92BE366E1008F8B89 /* DominantColors in Frameworks */,
+				959EE2442C119CD60061E678 /* DominantColors in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -92,7 +92,7 @@
 			);
 			name = iOSDominantColorsPreview;
 			packageProductDependencies = (
-				95278EF82BE366E1008F8B89 /* DominantColors */,
+				959EE2432C119CD60061E678 /* DominantColors */,
 			);
 			productName = iOSDominantColorsPreview;
 			productReference = 95613B7F2BE2DB5D0068A5A7 /* iOSDominantColorsPreview.app */;
@@ -123,7 +123,7 @@
 			);
 			mainGroup = 95613B762BE2DB5D0068A5A7;
 			packageReferences = (
-				95278EF72BE366E1008F8B89 /* XCRemoteSwiftPackageReference "DominantColors" */,
+				959EE2422C119CD60061E678 /* XCRemoteSwiftPackageReference "DominantColors" */,
 			);
 			productRefGroup = 95613B802BE2DB5D0068A5A7 /* Products */;
 			projectDirPath = "";
@@ -364,20 +364,20 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		95278EF72BE366E1008F8B89 /* XCRemoteSwiftPackageReference "DominantColors" */ = {
+		959EE2422C119CD60061E678 /* XCRemoteSwiftPackageReference "DominantColors" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/DenDmitriev/DominantColors";
 			requirement = {
-				branch = main;
-				kind = branch;
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.1.9;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		95278EF82BE366E1008F8B89 /* DominantColors */ = {
+		959EE2432C119CD60061E678 /* DominantColors */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 95278EF72BE366E1008F8B89 /* XCRemoteSwiftPackageReference "DominantColors" */;
+			package = 959EE2422C119CD60061E678 /* XCRemoteSwiftPackageReference "DominantColors" */;
 			productName = DominantColors;
 		};
 /* End XCSwiftPackageProductDependency section */

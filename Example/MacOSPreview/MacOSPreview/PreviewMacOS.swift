@@ -6,6 +6,7 @@
 //
 #if os(OSX)
 import SwiftUI
+import DominantColors
 
 @available(macOS 14.0, *)
 struct Preview: View {
@@ -197,7 +198,7 @@ struct Preview: View {
     
     private func loadImage(_ name: String) {
         let name = NSImage.Name(name)
-        let nsImage = Bundle.module.image(forResource: name)
+        let nsImage = Bundle.main.image(forResource: name)
         
         DispatchQueue.main.async {
             self.nsImage = nsImage

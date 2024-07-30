@@ -6,6 +6,7 @@
 //
 #if os(iOS)
 import SwiftUI
+import DominantColors
 
 @available(iOS 15.0, *)
 struct Preview: View {
@@ -158,7 +159,7 @@ struct Preview: View {
     }
     
     private func loadImage(_ name: String) {
-        let uiImage = UIImage(named: name, in: Bundle.module, with: nil)
+        let uiImage = UIImage(named: name, in: Bundle.main, with: nil)
         
         DispatchQueue.main.async {
             self.uiImage = uiImage
@@ -266,7 +267,7 @@ struct ImageSlider: View {
     var body: some View {
         TabView(selection: $selection) {
             ForEach(Array(zip(imageNames.indices, imageNames)), id: \.0) { index, imageName in
-                if let uiImage = UIImage(named: imageName, in: Bundle.module, with: nil) {
+                if let uiImage = UIImage(named: imageName, in: Bundle.main, with: nil) {
                     Image(uiImage: uiImage)
                         .resizable()
                         .aspectRatio(contentMode: .fit)

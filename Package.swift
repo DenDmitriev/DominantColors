@@ -27,8 +27,7 @@ let package = Package(
         .target(
             name: "DominantColors",
             dependencies: [], 
-            path: "Sources/DominantColors",
-            resources: [.process("Resources/Media.xcassets")]),
+            path: "Sources/DominantColors"),
         .testTarget(
             name: "DominantColorsTests",
             dependencies: ["DominantColors"],

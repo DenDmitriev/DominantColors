@@ -30,7 +30,7 @@ The DominantColors makes it easy to find the dominant colors of the image. It re
 ### 1.2.0
 Refactor: Move preview resources out of main product.
 
-[_vvisionnn_](https://github.com/vvisionnn)
+[_@vvisionnn_](https://github.com/vvisionnn)
 
 ## How to use
 ### Standard settings
@@ -113,13 +113,16 @@ You can get this result used `backgroundColor` for background, `primaryColor` fo
 
 
 ## Example
+1. Open the [DominantColors.xcworkspace](Example/.swiftpm/xcode/package.xcworkspace) file.
+2. Select the iOS project target will preview the package change via iOS preview, same for selecting the macOS target, the code change can be previewed on macOS.
+
 ### macOS
-- [PreviewMacOS](Sources/DominantColors/Preview/PreviewMacOS.swift) in package,
-- App [MacOSPreview](https://github.com/DenDmitriev/DominantColors/tree/main/Example/MacOSPreview) in example folder.
+- [PreviewMacOS](Example/MacOSPreview/MacOSPreview/PreviewMacOS.swift) in package,
+- App [MacOSPreview](Example/MacOSPreview/MacOSPreview/MacOSPreviewApp.swift) in example folder.
 
 ### iOS
-- [PreviewiOS](Sources/DominantColors/Preview/PreviewiOS.swift) in package,
-- App [iOSDominantColorsPreview](https://github.com/DenDmitriev/DominantColors/tree/main/Example/iOSDominantColorsPreview) in example folder.
+- [PreviewiOS](Example/iOSDominantColorsPreview/iOSDominantColorsPreview/PreviewiOS.swift) in package,
+- App [iOSDominantColorsPreview](Example/iOSDominantColorsPreview/iOSDominantColorsPreview/iOSDominantColorsPreviewApp.swift) in example folder.
 
 ## Installation
 

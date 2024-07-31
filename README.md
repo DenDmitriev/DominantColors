@@ -30,6 +30,8 @@ The DominantColors makes it easy to find the dominant colors of the image. It re
 ### 1.2.0
 Refactor: Move preview resources out of main product.
 
+[_vvisionnn_](https://github.com/vvisionnn)
+
 ## How to use
 ### Standard settings
 A quick way to get colors from an image where the image type is `CGImage`, `UIImage` or `NSImage`:

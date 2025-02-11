@@ -345,35 +345,51 @@ extension DominantColors {
         guard let cfData = image.dataProvider?.data,
               let data = CFDataGetBytePtr(cfData)
         else { throw ImageColorError.cgImageDataFailure }
-        
+
+        // Get image properties
+        let width = image.width
+        let height = image.height
+        let bytesPerRow = image.bytesPerRow
+
+        // Determine color channels
         var channels = 4
         if grayColorSpaces.contains(image.colorSpace) {
             channels = 2 // gray and alpha
         }
-        
+
+        // Pre-allocate capacity for better performance
         let colorsOnImage = NSCountedSet(capacity: Int(image.resolution.area))
-        for yCoordonate in 0 ..< image.height {
-            for xCoordonate in 0 ..< image.width {
-                let index = (image.width * yCoordonate + xCoordonate) * channels
+
+        // Process pixels safely with bounds checking
+        for y in 0..<height {
+            for x in 0..<width {
+                // Calculate safe pixel index
+                let rowStart = y * bytesPerRow
+                let pixelStart = rowStart + (x * channels)
+
+                // Ensure we don't access beyond data bounds
+                guard pixelStart + channels <= CFDataGetLength(cfData) else {
+                    continue
+                }
                 var pixelColor: RGB255?
                 if channels == 4 {
                     // Let's make sure there is enough alpha 150 / 250 = 60%.
-                    let alpha = data[index + 3]
+                    let alpha = data[pixelStart + 3]
                     guard alpha > 150 else {
                         continue
                     }
-                    
-                    let red = data[index + 0]
-                    let green = data[index + 1]
-                    let blue = data[index + 2]
+
+                    let red = data[pixelStart]
+                    let green = data[pixelStart + 1]
+                    let blue = data[pixelStart + 2]
                     pixelColor = RGB255(red: red, green: green, blue: blue)
                 } else if channels == 2 {
                     // Let's make sure there is enough alpha 150 / 250 = 60%.
-                    let alpha = data[index + 1]
+                    let alpha = data[pixelStart + 1]
                     guard alpha > 150 else {
                         continue
                     }
-                    let gray = data[index]
+                    let gray = data[pixelStart]
                     pixelColor = RGB255(red: gray, green: gray, blue: gray)
                 }
                 if let pixelColor {
@@ -381,57 +397,87 @@ extension DominantColors {
                 }
             }
         }
-        
+
         return colorsOnImage
     }
-    
-    /// Extract colors from pixellate image with countig
+
+    /// Extract colors from pixellate image with counting
     static func extractColors(pixellate image: CGImage, pixelSize: Int) throws -> NSCountedSet {
+        // Validate image data access
         guard let cfData = image.dataProvider?.data,
-              let data = CFDataGetBytePtr(cfData)
+              let data = CFDataGetBytePtr(cfData),
+              pixelSize > 0
         else { throw ImageColorError.cgImageDataFailure }
-        
+
+        // Get image properties
+        let width = image.width
+        let height = image.height
+        let bytesPerRow = image.bytesPerRow
+
+        // Determine color channels
         var channels = 4
         if grayColorSpaces.contains(image.colorSpace) {
             channels = 2 // gray and alpha
         }
-        
-        let colorsOnImage = NSCountedSet(capacity: Int(image.resolution.area))
-        for yCoordonate in 0 ..< image.height / pixelSize {
-            for xCoordonate in 0 ..< image.width / pixelSize {
-                let inset = pixelSize / 2
-                let index = (image.width * yCoordonate + xCoordonate + inset) * pixelSize * channels
+
+        // Calculate sampling dimensions
+        let sampledWidth = width / pixelSize
+        let sampledHeight = height / pixelSize
+        let inset = pixelSize / 2
+
+        // Pre-allocate capacity for better performance
+        let colorsOnImage = NSCountedSet(capacity: sampledWidth * sampledHeight)
+
+        // Process pixels safely with bounds checking
+        for y in 0..<sampledHeight {
+            for x in 0..<sampledWidth {
+                // Calculate safe pixel index with inset
+                let sampleY = (y * pixelSize) + inset
+                let sampleX = (x * pixelSize) + inset
+
+                // Ensure we stay within image bounds
+                guard sampleY < height && sampleX < width else {
+                    continue
+                }
+
+                let rowStart = sampleY * bytesPerRow
+                let pixelStart = rowStart + (sampleX * channels)
+
+                // Ensure we don't access beyond data bounds
+                guard pixelStart + channels <= CFDataGetLength(cfData) else {
+                    continue
+                }
+
                 var pixelColor: RGB255?
+
                 if channels == 4 {
                     // Let's make sure there is enough alpha 150 / 250 = 60%.
-                    let alpha = data[index + 3]
-                    guard alpha > 150 else {
-                        continue
-                    }
-                    
-                    let red = data[index + 0]
-                    let green = data[index + 1]
-                    let blue = data[index + 2]
+                    let alpha = data[pixelStart + 3]
+                    guard alpha > 150 else { continue }
+
+                    let red = data[pixelStart]
+                    let green = data[pixelStart + 1]
+                    let blue = data[pixelStart + 2]
                     pixelColor = RGB255(red: red, green: green, blue: blue)
                 } else if channels == 2 {
                     // Let's make sure there is enough alpha 150 / 250 = 60%.
-                    let alpha = data[index + 1]
+                    let alpha = data[pixelStart + 1]
                     guard alpha > 150 else {
                         continue
                     }
-                    let gray = data[index]
+                    let gray = data[pixelStart]
                     pixelColor = RGB255(red: gray, green: gray, blue: gray)
                 }
-                
+
                 if let pixelColor {
                     colorsOnImage.add(pixelColor)
                 }
             }
         }
-        
+
         return colorsOnImage
     }
-    
+
     /// Black filter in colors
     ///
     /// Remove all color less than maximum lightness

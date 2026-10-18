@@ -5,7 +5,7 @@
 //  Created by Denis Dmitriev on 12.05.2024.
 //
 
-#if os(iOS)
+#if canImport(UIKit)
 import UIKit
 
 extension UIImage {

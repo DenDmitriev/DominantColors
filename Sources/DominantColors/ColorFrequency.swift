@@ -8,7 +8,7 @@
 import CoreGraphics.CGColor
 
 /// A simple structure containing a color, and a frequency.
-public class ColorFrequency: CustomStringConvertible {
+public final class ColorFrequency: CustomStringConvertible {
     /// A simple `CGColor` instance.
     public var color: CGColor {
         didSet {

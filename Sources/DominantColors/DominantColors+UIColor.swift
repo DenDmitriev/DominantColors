@@ -5,7 +5,7 @@
 //  Created by Denis Dmitriev on 11.05.2024.
 //
 
-#if os(iOS)
+#if canImport(UIKit)
 import UIKit
 
 @available(iOS 2.0, *)

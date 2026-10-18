@@ -266,7 +266,7 @@ extension DominantColors {
             
             if let bestMatch, bestMatch.score < colorDifferenceScoreThreshold {
                 // Если соответсвие с другими цветами найдено, то увеличиваем счетчик пикселей этого цвета
-                bestMatch.colorFrequency.frequency += 1
+                bestMatch.colorFrequency.frequency += colorFrequency.frequency
             } else {
                 // Если соответсвие с другими цветами не найдены, то это новый доминирующий цвет
                 dominantColors.append(colorFrequency)

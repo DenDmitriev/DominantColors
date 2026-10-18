@@ -74,4 +74,21 @@ final class ColorFrequencyTests: XCTestCase {
         XCTAssertNotEqual(colorFrequency.lab.L, normalLab.L)
         XCTAssertEqual(colorFrequency.lab.L, 0, accuracy: 0.001)
     }
+    
+    /// `normal` must be computed as `frequency * lightness * saturation`, one factor at a time:
+    /// a different grouping can differ in the last bit, which reorders colors whose `normal` values tie.
+    func testNormalIsComputedFactorByFactor() throws {
+        for red in stride(from: 0, through: 255, by: 17) {
+            for green in stride(from: 0, through: 255, by: 17) {
+                for blue in stride(from: 0, through: 255, by: 51) {
+                    let color = CGColor(srgbRed: CGFloat(red) / 255, green: CGFloat(green) / 255, blue: CGFloat(blue) / 255, alpha: 1)
+                    for count in [1, 3, 7, 11, 23, 37, 101] as [CGFloat] {
+                        let colorFrequency = ColorFrequency(color: color, count: count)
+                        let expected = count * colorFrequency.normalLightnessFactor * colorFrequency.normalSaturationFactor
+                        XCTAssertEqual(colorFrequency.normal, expected, "\(red) \(green) \(blue) x \(count)")
+                    }
+                }
+            }
+        }
+    }
 }

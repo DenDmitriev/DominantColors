@@ -12,7 +12,7 @@ public class ColorFrequency: CustomStringConvertible {
     /// A simple `CGColor` instance.
     public var color: CGColor {
         didSet {
-            colorFactor = normalLightnessFactor * normalSaturationFactor
+            updateColorFactors()
             cachedLab = nil
         }
     }
@@ -30,11 +30,18 @@ public class ColorFrequency: CustomStringConvertible {
     /// The closer the saturation is to 75% in an HSL color, the higher the coefficient will be. Paler or oversaturated colors will produce a lower ratio.
     /// For example, a color HSL(0, 75, 50) with a frequency of 100 pixels in an image will receive `100 * 1 * 1 = 100`.
     public var normal: CGFloat {
-        return frequency * colorFactor
+        // Multiplied one factor at a time, like the original expression: a different grouping can differ in the last bit.
+        return frequency * lightnessFactor * saturationFactor
     }
 
-    /// The part of `normal` that depends only on `color`. Kept so sorting by `normal` doesn't redo the HSL conversion.
-    private var colorFactor: CGFloat = 0
+    /// The parts of `normal` that depend only on `color`. Kept so sorting by `normal` doesn't redo the HSL conversion.
+    private var lightnessFactor: CGFloat = 0
+    private var saturationFactor: CGFloat = 0
+    
+    private func updateColorFactors() {
+        lightnessFactor = normalLightnessFactor
+        saturationFactor = normalSaturationFactor
+    }
 
     /// The color in CIELAB, converted on first use for the many comparisons made while combining similar colors.
     private var cachedLab: Lab?
@@ -55,7 +62,7 @@ public class ColorFrequency: CustomStringConvertible {
         self.frequency = count
         self.color = color
         self.shade = ColorShade(cgColor: color)
-        self.colorFactor = normalLightnessFactor * normalSaturationFactor
+        updateColorFactors()
     }
     
 

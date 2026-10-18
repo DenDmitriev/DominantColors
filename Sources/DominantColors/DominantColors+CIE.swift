@@ -262,7 +262,12 @@ extension DominantColors {
             
             // Проход по уже добавленным цветам на лучшее соответсвие
             for dominantColor in dominantColors {
-                let differenceScore = colorFrequency.color.difference(from: dominantColor.color, using: formula).associatedValue
+                let differenceScore = colorFrequency.color.difference(
+                    from: dominantColor.color,
+                    using: formula,
+                    lab: colorFrequency.lab,
+                    otherLab: dominantColor.lab
+                ).associatedValue
                 if differenceScore < bestMatchScore ?? CGFloat(Int.max) {
                     bestMatchScore = differenceScore
                     bestMatchColorFrequency = dominantColor

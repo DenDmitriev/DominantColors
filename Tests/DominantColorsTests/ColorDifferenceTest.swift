@@ -50,5 +50,16 @@ final class ColorDifferenceTest: XCTestCase {
         let deltaCMC = red.difference(from: green, using: .CMC)
         XCTAssertEqual(deltaCMC.associatedValue, 108, accuracy: 1)
     }
+    
+    func testPrecomputedLabMatchesDifference() throws {
+        let red = CGColor(srgbRed: 1, green: 0, blue: 0, alpha: 1)
+        let green = CGColor(srgbRed: 0, green: 1, blue: 0, alpha: 1)
+        
+        for formula in [DeltaEFormula.euclidean, .CIE76, .CIE94, .CIEDE2000, .CMC] {
+            let expected = red.difference(from: green, using: formula)
+            let precomputed = red.difference(from: green, using: formula, lab: Lab(red), otherLab: Lab(green))
+            XCTAssertEqual(precomputed, expected, "\(formula)")
+        }
+    }
 
 }

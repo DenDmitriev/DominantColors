@@ -60,7 +60,7 @@ extension CGImage {
         filter.setValue(1.0, forKey: "inputAspectRatio")
         guard let outputImage = filter.value(forKey: "outputImage") as? CIImage else { return self }
 
-        let context = CIContext(options: [.useSoftwareRenderer: false])
+        let context = ImageFilter.ciContext
         guard let resizedImage = context.createCGImage(outputImage, from: outputImage.extent) else { return self }
         
         return resizedImage

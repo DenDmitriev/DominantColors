@@ -10,7 +10,12 @@ import CoreGraphics.CGColor
 /// A simple structure containing a color, and a frequency.
 public class ColorFrequency: CustomStringConvertible {
     /// A simple `CGColor` instance.
-    public var color: CGColor
+    public var color: CGColor {
+        didSet {
+            colorFactor = normalLightnessFactor * normalSaturationFactor
+            cachedLab = nil
+        }
+    }
     
     /// The frequency of the color.
     ///
@@ -25,7 +30,19 @@ public class ColorFrequency: CustomStringConvertible {
     /// The closer the saturation is to 75% in an HSL color, the higher the coefficient will be. Paler or oversaturated colors will produce a lower ratio.
     /// For example, a color HSL(0, 75, 50) with a frequency of 100 pixels in an image will receive `100 * 1 * 1 = 100`.
     public var normal: CGFloat {
-        return frequency * normalLightnessFactor * normalSaturationFactor
+        return frequency * colorFactor
+    }
+
+    /// The part of `normal` that depends only on `color`. Kept so sorting by `normal` doesn't redo the HSL conversion.
+    private var colorFactor: CGFloat = 0
+
+    /// The color in CIELAB, converted on first use for the many comparisons made while combining similar colors.
+    private var cachedLab: Lab?
+    var lab: Lab {
+        if let cachedLab { return cachedLab }
+        let lab = Lab(color)
+        cachedLab = lab
+        return lab
     }
     
     public var shade: ColorShade
@@ -38,6 +55,7 @@ public class ColorFrequency: CustomStringConvertible {
         self.frequency = count
         self.color = color
         self.shade = ColorShade(cgColor: color)
+        self.colorFactor = normalLightnessFactor * normalSaturationFactor
     }
     
 

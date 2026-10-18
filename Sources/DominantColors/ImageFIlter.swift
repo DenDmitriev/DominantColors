@@ -13,6 +13,10 @@ import UIKit.UIImage
 #endif
 
 class ImageFilter {
+
+    /// One context for every filter pass. Creating a `CIContext` is expensive and each new one recompiles its kernels.
+    static let ciContext = CIContext()
+
     /// Resize the image based on the requested quality
     static func resizeFilter(image: CGImage, by quality: DominantColorQuality = .fair) -> CGImage {
         let targetSize = quality.targetSize(for: image.resolution)
@@ -36,7 +40,7 @@ class ImageFilter {
         guard let outputImage = filter.outputImage
         else { throw ImageColorError.ciFilterCreateFailure(filter: filterName) }
         
-        let context = CIContext()
+        let context = ciContext
         
         guard let outputCGImage = context.createCGImage(outputImage, from: outputImage.extent)
         else { throw ImageColorError.ciFilterCreateFailure(filter: filterName) }
@@ -57,7 +61,7 @@ class ImageFilter {
 extension ImageFilter {
     // Representation CFData image
     private static func imageRepresentation(cgImage: CGImage) throws -> CGImage {
-        let context = CIContext()
+        let context = ImageFilter.ciContext
         guard let dataCroppedImage = context.pngRepresentation(of: CIImage(cgImage: cgImage), format: .RGBA8, colorSpace: cgImage.colorSpace!),
               let nsImageCroppedImage = NSImage(data: dataCroppedImage),
               let outputCGImage = nsImageCroppedImage.cgImage(forProposedRect: nil, context: nil, hints: nil)
@@ -70,7 +74,7 @@ extension ImageFilter {
 extension ImageFilter {
     // Representation CFData image
     private static func imageRepresentation(cgImage: CGImage) throws -> CGImage {
-        let context = CIContext()
+        let context = ImageFilter.ciContext
         guard let dataCroppedImage = context.pngRepresentation(of: CIImage(cgImage: cgImage), format: .RGBA8, colorSpace: cgImage.colorSpace!),
               let uiImageCroppedImage = UIImage(data: dataCroppedImage),
               let outputCGImage = uiImageCroppedImage.cgImage

@@ -59,4 +59,19 @@ final class ColorFrequencyTests: XCTestCase {
         XCTAssertEqual(colorFrequency.normalLightnessFactor, 0.5)
         XCTAssertEqual(normal, colorFrequency.frequency * 0.33 * 0.5)
     }
+    
+    func testChangingColorUpdatesNormalAndLab() throws {
+        // HSL(0, 75, 50)
+        let normalColor = CGColor(srgbRed: 223 / 255, green: 32 / 255, blue: 32 / 255, alpha: 1.0)
+        let black = CGColor(srgbRed: 0, green: 0, blue: 0, alpha: 1.0)
+        let colorFrequency = ColorFrequency(color: normalColor, count: 1)
+        XCTAssertEqual(colorFrequency.normal, 1)
+        let normalLab = colorFrequency.lab
+        
+        colorFrequency.color = black
+        
+        XCTAssertEqual(colorFrequency.normal, 0)
+        XCTAssertNotEqual(colorFrequency.lab.L, normalLab.L)
+        XCTAssertEqual(colorFrequency.lab.L, 0, accuracy: 0.001)
+    }
 }

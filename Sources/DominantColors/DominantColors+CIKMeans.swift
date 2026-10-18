@@ -54,7 +54,7 @@ extension DominantColors {
         
         outputImage = outputImage.settingAlphaOne(in: outputImage.extent)
         
-        let context = CIContext()
+        let context = ImageFilter.ciContext
         var bitmap = [UInt8](repeating: 0, count: 4 * clusterCount)
         
         context.render(outputImage, toBitmap: &bitmap, rowBytes: 4 * clusterCount, bounds: outputImage.extent, format: CIFormat.RGBA8, colorSpace: ciImage.colorSpace!)

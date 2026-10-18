@@ -9,7 +9,7 @@ import CoreImage
 
 public class DominantColors {
     /// Enum of additional options for removing flowers.
-    public enum Options {
+    public enum Options: Sendable {
         /// Remove pure black colors
         case excludeBlack
         /// Remove pure white colors
@@ -19,7 +19,7 @@ public class DominantColors {
     }
     
     /// Color sorting options.
-    public enum Sort: CaseIterable, Identifiable {
+    public enum Sort: CaseIterable, Identifiable, Sendable {
         /// Sorting colors from darkness to lightness.
         case darkness
         /// Sorting colors from lightness to darkness.

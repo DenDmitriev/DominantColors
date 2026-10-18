@@ -9,7 +9,7 @@ import CoreImage
 
 extension CGColor {
     
-    public enum ColorDifferenceResult: Comparable {
+    public enum ColorDifferenceResult: Comparable, Sendable {
         
         /// There is no difference between the two colors.
         case indentical(CGFloat)
@@ -219,7 +219,7 @@ extension CGColor {
         if CPrimeProduct == 0 {
             deltahPrime = 0
         } else {
-            /* Avoid the fabs() call */
+            /* Avoid the abs() call */
             deltahPrime = hPrime2 - hPrime1
             if deltahPrime < -deg180InRad {
                 deltahPrime += deg360InRad
@@ -243,7 +243,7 @@ extension CGColor {
         if CPrime1 * CPrime2 == 0 {
             barhPrime = hPrimeSum
         } else {
-            if fabs(hPrime1 - hPrime2) <= deg180InRad {
+            if abs(hPrime1 - hPrime2) <= deg180InRad {
                 barhPrime = hPrimeSum / 2.0
             } else {
                 if hPrimeSum < deg360InRad {

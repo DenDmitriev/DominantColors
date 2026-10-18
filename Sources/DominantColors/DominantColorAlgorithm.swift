@@ -7,7 +7,7 @@
 
 import Foundation
 
-public enum DominantColorAlgorithm: Identifiable, Hashable {
+public enum DominantColorAlgorithm: Identifiable, Hashable, Sendable {
 
     /// Finds the dominant colors of an image by iterating, grouping and sorting its pixels.
     case iterative(formula: DeltaEFormula)

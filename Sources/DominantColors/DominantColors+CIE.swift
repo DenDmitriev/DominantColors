@@ -69,7 +69,7 @@ extension DominantColors {
         resultLog: Bool = false,
         timeLog: Bool = false
     ) throws -> [ColorFrequency] {
-        let startTime = CFAbsoluteTimeGetCurrent()
+        let startTime = DispatchTime.now()
         var processTime = startTime
         // ------
         // Step 1: Resize, Pixellate, Crop the image based on the requested quality
@@ -226,18 +226,23 @@ extension DominantColors {
         // ------
         // Final: Calculate the frequency of colors as a percentage.
         // ------
-        let extractTime = (CFAbsoluteTimeGetCurrent() - startTime).rounded(.toNearestOrAwayFromZero, precision: 1000)
         if resultLog {
+            let extractTime = Self.seconds(since: startTime)
             print("DominantColor extract colors: \(dominantColors.map({ $0.shade })), count: \(dominantColors.count), time: \(extractTime)s")
         }
         
         return dominantColors
     }
     
-    private static func log(from time: inout CFAbsoluteTime, label: String) {
-        let extractTime = (CFAbsoluteTimeGetCurrent() - time).rounded(.toNearestOrAwayFromZero, precision: 1000)
-        print("\(label) ⏱️: \(extractTime)s")
-        time = CFAbsoluteTimeGetCurrent()
+    /// Seconds since `time`, rounded to milliseconds. `DispatchTime` is monotonic, unlike wall-clock time.
+    private static func seconds(since time: DispatchTime) -> Double {
+        (Double(DispatchTime.now().uptimeNanoseconds - time.uptimeNanoseconds) / 1_000_000_000)
+            .rounded(.toNearestOrAwayFromZero, precision: 1000)
+    }
+    
+    private static func log(from time: inout DispatchTime, label: String) {
+        print("\(label) ⏱️: \(seconds(since: time))s")
+        time = DispatchTime.now()
     }
     
     /// Combines colors that are similar
@@ -577,7 +582,7 @@ extension DominantColors {
         return result
     }
     
-    private static var grayColorSpaces: [CGColorSpace?] = [
+    private static let grayColorSpaces: [CGColorSpace?] = [
         CGColorSpace(name: CGColorSpace.genericGrayGamma2_2),
         CGColorSpace(name: CGColorSpace.linearGray),
         CGColorSpace(name: CGColorSpace.extendedGray),

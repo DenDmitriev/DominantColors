@@ -10,7 +10,7 @@ import CoreGraphics.CGColor
 /// Classification of colors by shades
 ///
 /// Dividing colors into shades along the color wheel using the coordinates of angle, saturation and brightness
-public enum ColorShade: CaseIterable {
+public enum ColorShade: CaseIterable, Sendable {
     // Classification by lightness
     case white
     case black

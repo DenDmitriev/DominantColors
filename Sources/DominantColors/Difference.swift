@@ -74,25 +74,33 @@ extension CGColor {
     ///   - formula: The algorithm to use to make the comparison.
     /// - Returns: The different between the passed in `CGColor` instance and this instance.
     public func difference(from color: CGColor, using formula: DeltaEFormula = .CIE94) -> ColorDifferenceResult {
+        difference(from: color, using: formula, lab: Lab(self), otherLab: Lab(color))
+    }
+    
+    /// Computes the difference using CIELAB values that were already converted.
+    ///
+    /// Converting a color to CIELAB is the expensive part of a comparison, so callers that compare
+    /// the same color many times can convert it once and pass it in.
+    func difference(from color: CGColor, using formula: DeltaEFormula, lab: Lab, otherLab: Lab) -> ColorDifferenceResult {
         switch formula {
         case .euclidean:
             let differenceValue = CGColor.deltaEuclidean(lhs: self, rhs: color)
             let roundedDifferenceValue = differenceValue.rounded(.toNearestOrAwayFromZero, precision: 1000)
             return ColorDifferenceResult(value: roundedDifferenceValue)
         case .CIE76:
-            let differenceValue = CGColor.deltaECIE76(lhs: self, rhs: color)
+            let differenceValue = CGColor.deltaECIE76(lhs: lab, rhs: otherLab)
             let roundedDifferenceValue = differenceValue.rounded(.toNearestOrAwayFromZero, precision: 1000)
             return ColorDifferenceResult(value: roundedDifferenceValue)
         case .CIE94:
-            let differenceValue = CGColor.deltaECIE94(lhs: self, rhs: color)
+            let differenceValue = CGColor.deltaECIE94(lhs: lab, rhs: otherLab)
             let roundedDifferenceValue = differenceValue.rounded(.toNearestOrAwayFromZero, precision: 1000)
             return ColorDifferenceResult(value: roundedDifferenceValue)
         case .CIEDE2000:
-            let differenceValue = CGColor.deltaCIEDE2000(lhs: self, rhs: color)
+            let differenceValue = CGColor.deltaCIEDE2000(lhs: lab, rhs: otherLab)
             let roundedDifferenceValue = differenceValue.rounded(.toNearestOrAwayFromZero, precision: 1000)
             return ColorDifferenceResult(value: roundedDifferenceValue)
         case .CMC:
-            let differenceValue = CGColor.deltaCMC(lhs: self, rhs: color)
+            let differenceValue = CGColor.deltaCMC(lhs: lab, rhs: otherLab)
             let roundedDifferenceValue = differenceValue.rounded(.toNearestOrAwayFromZero, precision: 1000)
             return ColorDifferenceResult(value: roundedDifferenceValue)
         }
@@ -109,7 +117,7 @@ extension CGColor {
     /// The color difference, or ΔE, between two colors according to the 1976 CIE formulas.
     ///
     /// [Formulas](http://www.brucelindbloom.com/index.html?ColorCalculator.html).
-    private static func deltaECIE76(lhs: CGColor, rhs: CGColor) -> CGFloat {
+    private static func deltaECIE76(lhs: Lab, rhs: Lab) -> CGFloat {
         let deltaE = sqrt(pow(rhs.L - lhs.L, 2) + pow(rhs.a - lhs.a, 2) + pow(rhs.b - lhs.b, 2))
         return deltaE
     }
@@ -117,7 +125,7 @@ extension CGColor {
     /// The color difference, or ΔE, between two colors according to the 1994 CIE formulas.
     ///
     /// [Formulas](http://www.brucelindbloom.com/Eqn_DeltaE_CIE94.html)
-    private static func deltaECIE94(lhs: CGColor, rhs: CGColor) -> CGFloat {
+    private static func deltaECIE94(lhs: Lab, rhs: Lab) -> CGFloat {
         let kL: CGFloat = 1.0
         let kC: CGFloat = 1.0
         let kH: CGFloat = 1.0
@@ -150,7 +158,7 @@ extension CGColor {
     /// The color difference, or ΔE, between two colors according to the 2000 CIE formulas.
     ///
     /// [Formulas](http://www.brucelindbloom.com/Eqn_DeltaE_CIE2000.html)
-    private static func deltaCIEDE2000(lhs: CGColor, rhs: CGColor) -> CGFloat {
+    private static func deltaCIEDE2000(lhs: Lab, rhs: Lab) -> CGFloat {
         /*
          * "For these and all other numerical/graphical 􏰀delta E00 values
          * reported in this article, we set the parametric weighting factors
@@ -277,7 +285,7 @@ extension CGColor {
     /// The color difference, or ΔE, between two colors according to the CMC formulas.
     ///
     /// [Formulas](http://www.brucelindbloom.com/index.html?Eqn_DeltaE_CMC.html)
-    private static func deltaCMC(lhs: CGColor, rhs: CGColor) -> CGFloat {
+    private static func deltaCMC(lhs: Lab, rhs: Lab) -> CGFloat {
         let l = 1.0
         let c = 1.0
         

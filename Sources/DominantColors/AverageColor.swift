@@ -24,7 +24,7 @@ public class AverageColor {
             throw ImageColorError.outputImageFailure
         }
 
-        let context = CIContext()
+        let context = ImageFilter.ciContext
         var bitmap = [UInt8](repeating: 0, count: 4)
         
         context.render(outputImage, toBitmap: &bitmap, rowBytes: 4, bounds: CGRect(x: 0, y: 0, width: 1, height: 1), format: CIFormat.RGBA8, colorSpace: CGColorSpaceCreateDeviceRGB())

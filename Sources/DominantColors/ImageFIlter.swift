@@ -8,6 +8,10 @@
 import CoreImage
 
 class ImageFilter {
+
+    /// One context for every filter pass. Creating a `CIContext` is expensive and each new one recompiles its kernels.
+    static let ciContext = CIContext()
+
     /// Resize the image based on the requested quality
     static func resizeFilter(image: CGImage, by quality: DominantColorQuality = .fair) -> CGImage {
         let targetSize = quality.targetSize(for: image.resolution)
@@ -31,7 +35,7 @@ class ImageFilter {
         guard let outputImage = filter.outputImage
         else { throw ImageColorError.ciFilterCreateFailure(filter: filterName) }
         
-        let context = CIContext()
+        let context = ciContext
         
         guard let outputCGImage = context.createCGImage(outputImage, from: outputImage.extent)
         else { throw ImageColorError.ciFilterCreateFailure(filter: filterName) }

@@ -46,6 +46,14 @@ struct LabCalculator {
     }
 }
 
+extension Lab {
+    
+    /// Converts the color to CIELAB once, instead of once for each of its L*, a* and b* values.
+    init(_ color: CGColor) {
+        self = LabCalculator.convert(RGB: color.rgb)
+    }
+}
+
 extension CGColor {
     
     /// The L* value of the CIELAB color space.

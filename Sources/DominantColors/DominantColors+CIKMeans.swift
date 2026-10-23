@@ -57,8 +57,8 @@ extension DominantColors {
         guard let colorSpace = ciImage.colorSpace ?? CGColorSpace(name: CGColorSpace.sRGB) else {
             throw ImageColorError.ciImageFailure
         }
-        
-        let context = CIContext()
+
+        let context = ImageFilter.ciContext
         var bitmap = [UInt8](repeating: 0, count: 4 * clusterCount)
         
         context.render(outputImage, toBitmap: &bitmap, rowBytes: 4 * clusterCount, bounds: outputImage.extent, format: CIFormat.RGBA8, colorSpace: colorSpace)

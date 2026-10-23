@@ -7,7 +7,7 @@
 
 import CoreImage
 
-public struct HSL {
+public struct HSL: Sendable {
     let hue: Double
     let saturation: Double
     let lightness: Double

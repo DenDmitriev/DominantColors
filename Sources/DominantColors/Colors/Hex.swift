@@ -7,7 +7,7 @@
 
 import CoreImage
 
-public struct Hex {
+public struct Hex: Sendable {
     
     let cgColor: CGColor
     

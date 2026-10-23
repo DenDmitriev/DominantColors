@@ -8,7 +8,7 @@
 import CoreGraphics.CGColor
 
 /// A simple structure containing a color, and a frequency.
-public class ColorFrequency: CustomStringConvertible {
+public final class ColorFrequency: CustomStringConvertible {
     /// A simple `CGColor` instance.
     public var color: CGColor {
         didSet {
@@ -105,11 +105,24 @@ public class ColorFrequency: CustomStringConvertible {
 
 extension ColorFrequency: Hashable {
     public func hash(into hasher: inout Hasher) {
-        hasher.combine(color.hashValue + Int(frequency))
+        // Not `frequency`: it changes while colors are combined, and a changed hash corrupts a Set holding the object.
+        hasher.combine(color)
     }
     
     public static func == (lhs: ColorFrequency, rhs: ColorFrequency) -> Bool {
         lhs.color == rhs.color &&
         lhs.frequency == rhs.frequency
+    }
+}
+
+extension ColorFrequency {
+    
+    /// A total order on colors (by their components), used to break ties when sorting.
+    func isOrderedBeforeByColor(_ other: ColorFrequency) -> Bool {
+        let lhs = color.components ?? [], rhs = other.color.components ?? []
+        for (l, r) in zip(lhs, rhs) where l != r {
+            return l < r
+        }
+        return lhs.count < rhs.count
     }
 }

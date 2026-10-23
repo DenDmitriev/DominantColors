@@ -54,7 +54,7 @@ extension CGImage {
         
         let ciImage = CIImage(cgImage: self)
 
-        let filter = CIFilter(name: "CILanczosScaleTransform")!
+        guard let filter = CIFilter(name: "CILanczosScaleTransform") else { return self }
         filter.setValue(ciImage, forKey: "inputImage")
         filter.setValue(ratio, forKey: "inputScale")
         filter.setValue(1.0, forKey: "inputAspectRatio")

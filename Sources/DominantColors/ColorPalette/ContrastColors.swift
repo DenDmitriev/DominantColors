@@ -8,7 +8,7 @@
 import CoreGraphics.CGColor
 
 /// A simple structure used to represent color palettes.
-public struct ContrastColors {
+public struct ContrastColors: Sendable {
     
     /// The color that should be used as a background.
     public let background: CGColor

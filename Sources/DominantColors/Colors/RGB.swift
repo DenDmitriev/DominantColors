@@ -15,7 +15,7 @@ struct RGB: Hashable {
 
 extension CGColor {
     
-    #if os(iOS)
+    #if canImport(UIKit)
     public static var black: CGColor {
         CGColor(red: 0, green: 0, blue: 0, alpha: 1)
     }

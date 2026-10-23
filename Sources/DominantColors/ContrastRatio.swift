@@ -11,7 +11,7 @@ extension CGColor {
     
     /// An enumeration which groups contrast ratios based on their readability.
     /// This follows the  Web Content Accessibility Guidelines (WCAG) 2.0.
-    public enum ContrastRatioResult {
+    public enum ContrastRatioResult: Sendable {
         /// The contrast ratio between is enough for most people to distinguish the two colors.
         /// It can be used as text / background.
         case acceptable(CGFloat)

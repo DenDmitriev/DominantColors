@@ -134,11 +134,11 @@ extension DominantColors {
             switch quality {
             case .low, .fair, .high:
                 return colorFrequenciesSet
-                    .sorted(by: { $0.normal > $1.normal })
+                    .sortedDescending(by: { $0.normal })
             case .best:
                 let maxNumberOfColors = 100
                 let colorFrequenciesArray = colorFrequenciesSet
-                    .sorted(by: { $0.normal > $1.normal })
+                    .sortedDescending(by: { $0.normal })
                     .prefix(maxNumberOfColors)
                 return Array(colorFrequenciesArray)
             }
@@ -150,13 +150,13 @@ extension DominantColors {
         // ------
         let dominantColorsByShade = sortedColors.mapValues { colorFrequencies in
             var dominantColors = combine(colorFrequencies: colorFrequencies, with: formula, by: deltaColors)
-                .sorted(by: { $0.normal > $1.normal })
+                .sortedDescending(by: { $0.normal })
             var deltaColorsIncrement = deltaColors
             // We increase the difference to combine colors until there are less than max count shades left in each shade.
             while dominantColors.count > maxCount {
                 deltaColorsIncrement += 1
                 dominantColors = combine(colorFrequencies: dominantColors, with: formula, by: deltaColorsIncrement)
-                    .sorted(by: { $0.normal > $1.normal })
+                    .sortedDescending(by: { $0.normal })
             }
             return dominantColors
         }
@@ -167,12 +167,13 @@ extension DominantColors {
         //         We will combine until we get the requested number of colors.
         // ------
         
-        var dominantColors = dominantColorsByShade.values.flatMap({ $0 })
-            .sorted(by: { $0.normal > $1.normal })
+        // Walk the shades in a fixed order: dictionary order changes from run to run.
+        var dominantColors = ColorShade.allCases.flatMap({ dominantColorsByShade[$0] ?? [] })
+            .sortedDescending(by: { $0.normal })
         var deltaColorsIncrement = deltaColors
         while dominantColors.count > maxCount {
             dominantColors = combine(colorFrequencies: dominantColors, with: formula, by: deltaColorsIncrement)
-                .sorted(by: { $0.normal > $1.normal })
+                .sortedDescending(by: { $0.normal })
             deltaColorsIncrement += 1
         }
         if timeLog { Self.log(from: &processTime, label: "Step 6. Combine similar colors.") }
@@ -193,13 +194,9 @@ extension DominantColors {
         
         switch sorting {
         case .darkness:
-            dominantColors = dominantColors.sorted(by: { (lhs, rhs) -> Bool in
-                lhs.color.relativeLuminance < rhs.color.relativeLuminance
-            })
+            dominantColors = dominantColors.sortedAscending(by: { $0.color.relativeLuminance })
         case .lightness:
-            dominantColors = dominantColors.sorted(by: { (lhs, rhs) -> Bool in
-                lhs.color.relativeLuminance > rhs.color.relativeLuminance
-            })
+            dominantColors = dominantColors.sortedDescending(by: { $0.color.relativeLuminance })
         case .frequency:
             dominantColors = dominantColors.sorted(by: { (lhs, rhs) -> Bool in
                 lhs.frequency > rhs.frequency
@@ -249,36 +246,34 @@ extension DominantColors {
     ///
     /// - Returns: The main dominant colors on the picture.
     private static func combine(colorFrequencies: [ColorFrequency], with formula: DeltaEFormula, by delta: CGFloat = 10.0) -> [ColorFrequency] {
-        /// The main dominant colors on the picture.
-        var dominantColors = Set<ColorFrequency>()
+        /// The main dominant colors on the picture, in the order they were found.
+        var dominantColors = [ColorFrequency]()
         
         /// The score that needs to be met to consider two colors similar.
         let colorDifferenceScoreThreshold = delta
         
         // Combines colors that are similar.
         for colorFrequency in colorFrequencies {
-            var bestMatchScore: CGFloat?
-            var bestMatchColorFrequency: ColorFrequency?
+            var bestMatch: (score: CGFloat, colorFrequency: ColorFrequency)?
             
             // Проход по уже добавленным цветам на лучшее соответсвие
             for dominantColor in dominantColors {
                 let differenceScore = colorFrequency.color.difference(from: dominantColor.color, using: formula).associatedValue
-                if differenceScore < bestMatchScore ?? CGFloat(Int.max) {
-                    bestMatchScore = differenceScore
-                    bestMatchColorFrequency = dominantColor
+                if differenceScore < bestMatch?.score ?? CGFloat(Int.max) {
+                    bestMatch = (differenceScore, dominantColor)
                 }
             }
             
-            if let bestMatchScore = bestMatchScore, bestMatchScore < colorDifferenceScoreThreshold {
+            if let bestMatch, bestMatch.score < colorDifferenceScoreThreshold {
                 // Если соответсвие с другими цветами найдено, то увеличиваем счетчик пикселей этого цвета
-                bestMatchColorFrequency!.frequency += 1
+                bestMatch.colorFrequency.frequency += colorFrequency.frequency
             } else {
                 // Если соответсвие с другими цветами не найдены, то это новый доминирующий цвет
-                dominantColors.insert(colorFrequency)
+                dominantColors.append(colorFrequency)
             }
         }
         
-        return dominantColors.sorted(by: { $0.frequency > $1.frequency })
+        return dominantColors.sortedDescending(by: { $0.frequency })
     }
     
     /// Remove colors that are barely present on the image.
@@ -565,7 +560,7 @@ extension DominantColors {
         let sortedColorShades = Array(dominantColorsByShade.keys).sorted()
         colorShadeLoop: for colorShade in sortedColorShades {
             guard let dominantColorsOfShade = dominantColorsByShade[colorShade] else { continue }
-            for colorFrequency in dominantColorsOfShade.sorted(by: { $0.normal > $1.normal }) {
+            for colorFrequency in dominantColorsOfShade.sortedDescending(by: { $0.normal }) {
                 guard !dominantColors.contains(colorFrequency),
                       !result.contains(colorFrequency)
                 else { continue }
@@ -583,4 +578,26 @@ extension DominantColors {
         CGColorSpace(name: CGColorSpace.extendedGray),
         CGColorSpace(name: CGColorSpace.extendedLinearGray),
     ]
+}
+
+extension Sequence where Element == ColorFrequency {
+    
+    /// Sorts from the largest `value` to the smallest.
+    ///
+    /// Many colors share a value (for example a frequency of 1), and sets and dictionaries enumerate in a different
+    /// order on every run, so ties are broken by the color itself to keep the result the same every time.
+    func sortedDescending(by value: (ColorFrequency) -> CGFloat) -> [ColorFrequency] {
+        sorted { lhs, rhs in
+            let (lhsValue, rhsValue) = (value(lhs), value(rhs))
+            return lhsValue != rhsValue ? lhsValue > rhsValue : lhs.isOrderedBeforeByColor(rhs)
+        }
+    }
+    
+    /// Sorts from the smallest `value` to the largest, breaking ties by color.
+    func sortedAscending(by value: (ColorFrequency) -> CGFloat) -> [ColorFrequency] {
+        sorted { lhs, rhs in
+            let (lhsValue, rhsValue) = (value(lhs), value(rhs))
+            return lhsValue != rhsValue ? lhsValue < rhsValue : lhs.isOrderedBeforeByColor(rhs)
+        }
+    }
 }

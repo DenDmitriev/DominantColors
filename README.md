@@ -3,6 +3,7 @@
 A library for extracting color from an image. 
 
 - [Features](#features)
+- [Supported Platforms](#supported-platforms)
 - [How to use](#how-to-use)
 - [Contrast colors](#contrast-colors)
 - [Average colors](#average-colors)
@@ -22,6 +23,13 @@ The DominantColors makes it easy to find the dominant colors of the image. It re
 ![ComeTogether Strip](https://github.com/DenDmitriev/DominantColors/assets/65191747/581e2065-f0c2-4b73-9dec-0acefb4e7b7d)
 
 ![The_Weeknd_-_Starboy Strip](https://github.com/DenDmitriev/DominantColors/assets/65191747/d056842e-ef5c-423d-b164-2f3b82872da6)
+
+## Supported Platforms
+
+* iOS
+* macOS
+* tvOS
+* visionOS
 
 ## How to use
 ### Standard settings
@@ -124,7 +132,10 @@ Once you have your Swift package set up, adding DominantColors as a dependency i
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/DenDmitriev/DominantColors.git", .upToNextMajor(from: "1.2.0"))
+    .package(
+    url: "https://github.com/DenDmitriev/DominantColors.git",
+    .upToNextMajor(from: "1.3.0")
+    )
 ]
 ```
 
